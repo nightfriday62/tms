@@ -1,4 +1,4 @@
-package com.nightfriday.tms.truck;
+package com.nightfriday.tms.persistence.truck;
 
 public enum TrailerType {
     FLATBED, BOX, REFRIGERATED, OTHER

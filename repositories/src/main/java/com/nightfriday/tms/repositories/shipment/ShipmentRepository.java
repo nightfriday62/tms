@@ -1,7 +1,7 @@
 package com.nightfriday.tms.repositories.shipment;
 
 import org.springframework.data.repository.Repository;
-import com.nightfriday.tms.shipment.Shipment;
+import com.nightfriday.tms.persistence.shipment.Shipment;
 
 
 

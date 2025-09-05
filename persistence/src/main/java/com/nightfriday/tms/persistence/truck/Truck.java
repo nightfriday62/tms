@@ -1,4 +1,4 @@
-package com.nightfriday.tms.truck;
+package com.nightfriday.tms.persistence.truck;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

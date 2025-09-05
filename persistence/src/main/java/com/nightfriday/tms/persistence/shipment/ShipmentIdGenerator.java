@@ -1,4 +1,4 @@
-package com.nightfriday.tms.shipment;
+package com.nightfriday.tms.persistence.shipment;
 
 import java.io.Serializable;
 import java.time.LocalDate;

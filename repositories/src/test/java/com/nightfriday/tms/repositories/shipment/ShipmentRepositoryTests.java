@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import com.nightfriday.tms.shipment.Shipment;
+import com.nightfriday.tms.persistence.shipment.Shipment;
 
 
 @SpringBootTest
