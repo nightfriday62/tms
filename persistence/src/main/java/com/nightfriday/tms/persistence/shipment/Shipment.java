@@ -29,7 +29,6 @@ public class Shipment {
   @OneToMany(mappedBy = "shipment", orphanRemoval = true, cascade = {CascadeType.MERGE,
       CascadeType.PERSIST})
   private List<Truck_Shipment> trucks = new ArrayList<>();
-  // TODO: Add relationships to Shipment and ShippingUnit via join tables
 
   public Shipment() {
   }
