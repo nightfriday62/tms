@@ -1,8 +1,6 @@
-package com.nightfriday.tms.repositories.shipment;
+package com.nightfriday.tms.persistence.shipment;
 
 import org.springframework.data.repository.Repository;
-import com.nightfriday.tms.persistence.shipment.Shipment;
-
 
 
 public interface ShipmentRepository extends Repository<Shipment, String> {

@@ -26,6 +26,39 @@ public class Truck_Shipment {
   private Shipment shipment;
 
   private Date bindingDate;
-    public Truck_Shipment() {
-    }
+
+  public Truck_Shipment() {
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public Truck getTruck() {
+    return truck;
+  }
+
+  public void setTruck(Truck truck) {
+    this.truck = truck;
+  }
+
+  public Shipment getShipment() {
+    return shipment;
+  }
+
+  public void setShipment(Shipment shipment) {
+    this.shipment = shipment;
+  }
+
+  public Date getBindingDate() {
+    return bindingDate;
+  }
+
+  public void setBindingDate(Date bindingDate) {
+    this.bindingDate = bindingDate;
+  }
 }

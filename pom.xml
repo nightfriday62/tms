@@ -62,7 +62,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>persistence</module>
-        <module>repositories</module>
         <module>app</module>
     </modules>
     <build>

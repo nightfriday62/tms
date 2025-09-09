@@ -1,12 +1,19 @@
-package com.nightfriday.tms.persistence.persistence;
+package com.nightfriday.tms.persistence;
 
+import com.nightfriday.tms.persistence.shipment.Shipment;
+import com.nightfriday.tms.persistence.shipment.ShipmentRepository;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
+import com.nightfriday.tms.persistence.shippingUnit.ShippingUnitRepository;
+
+import com.nightfriday.tms.persistence.truck.Truck;
+import com.nightfriday.tms.persistence.truck.TruckRepository;
 import java.math.BigDecimal;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,6 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CommonApplicationTests {
   @Autowired
   private ShippingUnitRepository shippingUnitRepository;
+
+  @Autowired
+  private TruckRepository truckRepository;
+  @Autowired
+  private ShipmentRepository shipmentRepository;
+
   @Test
   void contextLoads() {
   }
@@ -33,4 +46,21 @@ class CommonApplicationTests {
         assertEquals(returned.getLength(),saved.getLength());
         assertEquals(returned.getHeight(),saved.getHeight());
   }
+
+  @Test
+  @Transactional
+  void testSetCreateShipmentAndBind() {
+    Shipment shipment = new Shipment();
+    shipment.setShipmentNumber("SHP123456");
+    Truck truck = new Truck();
+    truck.setPlateNumber("TRK123456");
+    truckRepository.save(truck);
+    shipment.setTrucks(truck);
+    Shipment saved = shipmentRepository.save(shipment);
+    Shipment returned = shipmentRepository.findByShipmentNumber(saved.getShipmentNumber());
+    assertThat(returned.getShipmentNumber()).isEqualTo("SHP123456");
+    assertThat(returned.getTrucks()).hasSize(1);
+    assertThat(returned.getTrucks().get(0).getTruck().getPlateNumber()).isEqualTo("TRK123456");
+  }
+
 }
