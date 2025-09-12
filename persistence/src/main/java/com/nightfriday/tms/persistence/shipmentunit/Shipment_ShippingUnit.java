@@ -50,4 +50,6 @@ public class Shipment_ShippingUnit {
   public void setShippingUnit(ShippingUnit shippingUnit) {
     this.shippingUnit = shippingUnit;
   }
+
+
 }

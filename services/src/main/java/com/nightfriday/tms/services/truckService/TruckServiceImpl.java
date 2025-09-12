@@ -1,0 +1,71 @@
+package com.nightfriday.tms.services.truckService;
+
+import com.nightfriday.tms.persistence.truck.TrailerType;
+import com.nightfriday.tms.persistence.truck.Truck;
+import com.nightfriday.tms.persistence.truck.TruckRepository;
+import com.nightfriday.tms.persistence.truck.TruckType;
+import java.math.BigDecimal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TruckServiceImpl implements TruckService {
+
+  private final TruckRepository truckRepository;
+
+  @Autowired
+  public TruckServiceImpl(TruckRepository truckRepository) {
+    this.truckRepository = truckRepository;
+  }
+
+
+  @Override
+  public Truck createTruck(String plateNumber, TruckType truckType, String brand, String model,
+                           double volume, double weight, TrailerType trailerType,
+                           String trailerPlateNumber) {
+    if (plateNumber == null || plateNumber.isEmpty() || truckType == null ||
+        volume <= 0 || weight <= 0) {
+      throw new IllegalArgumentException("Invalid input parameters");
+    }
+    Truck deletedCheck = truckRepository.findDeleted(plateNumber);
+    if (deletedCheck != null) {
+      deletedCheck.setActive(true);
+      deletedCheck.setDeletedAt(null);
+      deletedCheck.setBrand(brand);
+      deletedCheck.setModel(model);
+      deletedCheck.setTruckType(truckType);
+      deletedCheck.setVolume(BigDecimal.valueOf(volume));
+      deletedCheck.setWeight(BigDecimal.valueOf(weight));
+      deletedCheck.setTrailerType(trailerType);
+      deletedCheck.setTrailerPlateNumber(trailerPlateNumber);
+      return truckRepository.save(deletedCheck);
+    }
+    Truck newTruck = new Truck(plateNumber, truckType, brand, model,
+        BigDecimal.valueOf(volume),
+        BigDecimal.valueOf(weight),
+        trailerType, trailerPlateNumber);
+    return truckRepository.save(newTruck);
+  }
+
+  // Soft delete by setting active to false
+  // and setting deletedAt to current timestamp
+  // Actual deletion is handled by @SQLDelete annotation in Truck entity
+  @Override
+  public void deleteTruck(String plateNumber) {
+    Truck truck = truckRepository.findByPlateNumber(plateNumber);
+    if (truck == null) {
+      throw new IllegalArgumentException("Truck not found");
+    }
+    truckRepository.delete(truck);
+
+  }
+
+  @Override
+  public Truck getTruckByPlateNumber(String plateNumber) {
+    Truck truck = truckRepository.findByPlateNumber(plateNumber);
+    if (truck == null) {
+      throw new IllegalArgumentException("Truck not found");
+    }
+    return truck;
+  }
+}

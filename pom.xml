@@ -63,6 +63,7 @@
     <modules>
         <module>persistence</module>
         <module>app</module>
+        <module>services</module>
     </modules>
     <build>
         <plugins>

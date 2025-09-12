@@ -6,4 +6,5 @@ public interface ShippingUnitRepository extends CrudRepository<ShippingUnit, Lon
   ShippingUnit save(ShippingUnit shippingUnit);
 
   ShippingUnit findById(long id);
+  ShippingUnit findByDescription(String description);
 }

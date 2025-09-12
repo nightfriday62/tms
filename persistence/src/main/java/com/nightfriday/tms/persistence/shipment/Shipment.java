@@ -1,5 +1,7 @@
 package com.nightfriday.tms.persistence.shipment;
 
+import com.nightfriday.tms.persistence.shipmentunit.Shipment_ShippingUnit;
+import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truckshipment.Truck_Shipment;
 import jakarta.persistence.CascadeType;
@@ -30,6 +32,10 @@ public class Shipment {
       CascadeType.PERSIST})
   private List<Truck_Shipment> trucks = new ArrayList<>();
 
+  @OneToMany(mappedBy = "shipment", orphanRemoval = true, cascade = {CascadeType.MERGE,
+      CascadeType.PERSIST})
+  private List<Shipment_ShippingUnit> shippingUnits = new ArrayList<>();
+
   public Shipment() {
   }
 
@@ -50,5 +56,15 @@ public class Shipment {
 
   public List<Truck_Shipment> getTrucks() {
     return trucks;
+  }
+
+  public List<Shipment_ShippingUnit> getShippingUnits() {
+    return shippingUnits;
+  }
+  public void setShippingUnits(ShippingUnit shippingUnit) {
+    Shipment_ShippingUnit shipment_ShippingUnit = new Shipment_ShippingUnit();
+    shipment_ShippingUnit.setShipment(this);
+    shipment_ShippingUnit.setShippingUnit(shippingUnit);
+    this.shippingUnits.add(shipment_ShippingUnit);
   }
 }
