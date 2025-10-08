@@ -2,9 +2,12 @@ package com.nightfriday.tms.persistence.truck;
 
 
 import com.nightfriday.tms.persistence.truckshipment.Truck_Shipment;
+import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -24,6 +27,8 @@ import org.hibernate.annotations.SQLDelete;
 public class Truck {
   @Id
   private String plateNumber;
+  //@Basic(optional = false)
+  //@Enumerated(EnumType.STRING)
   private TruckType truckType;
   private String brand;
   private String model;

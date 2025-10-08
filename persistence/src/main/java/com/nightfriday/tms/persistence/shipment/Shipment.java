@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +24,10 @@ public class Shipment {
   private BigDecimal weight; // in tons
   private BigDecimal volume; // in cubic meters
   private ShipmentStatus status;
-  private Date scheduledShipmentDate;
-  private Date actualShipmentDate;
-  private Date scheduledDeliveryDate;
-  private Date actualDeliveryDate;
+  private LocalDate scheduledShipmentDate;
+  private LocalDate actualShipmentDate;
+  private LocalDate scheduledDeliveryDate;
+  private LocalDate actualDeliveryDate;
   @OneToMany(mappedBy = "shipment", orphanRemoval = true, cascade = {CascadeType.MERGE,
       CascadeType.PERSIST})
   private List<Truck_Shipment> trucks = new ArrayList<>();

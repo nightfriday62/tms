@@ -3,6 +3,7 @@ package com.nightfriday.tms.persistence.shipmentunit;
 import com.nightfriday.tms.persistence.shipment.Shipment;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -16,11 +17,11 @@ public class Shipment_ShippingUnit {
   @GeneratedValue
   private long id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "SHIPMENT_NUMBER", referencedColumnName = "shipmentNumber", nullable = false)
   private Shipment shipment;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "SHIPPING_UNIT_ID", referencedColumnName = "Id", nullable = false)
   private ShippingUnit shippingUnit;
 
