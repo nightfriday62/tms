@@ -34,12 +34,13 @@ class TruckRepositoryTest {
     Truck truck = new Truck();
     truck.setPlateNumber("XYZ789");
     truck.setBrand("Volvo");
+    truck.setActive(true);
     truckRepository.saveAndFlush(truck);
 
 
-    System.out.println(truckRepository.findFirstByBrand("Volvo").getClass());
-    /*assertThat(found).isNotNull();
+    Truck found = truckRepository.findFirstByBrand("Volvo");
+    assertThat(found).isNotNull();
     assertThat(found.getPlateNumber()).isEqualTo("XYZ789");
-    assertThat(found.getBrand()).isEqualTo("Volvo");*/
+    assertThat(found.getBrand()).isEqualTo("Volvo");
   }
 }

@@ -15,14 +15,14 @@ import jakarta.persistence.Table;
 public class Shipment_ShippingUnit {
   @Id
   @GeneratedValue
-  private long id;
+  private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "SHIPMENT_NUMBER", referencedColumnName = "shipmentNumber", nullable = false)
   private Shipment shipment;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "SHIPPING_UNIT_ID", referencedColumnName = "Id", nullable = false)
+  @JoinColumn(name = "SHIPPING_UNIT_ID", referencedColumnName = "id", nullable = false)
   private ShippingUnit shippingUnit;
 
   public Shipment_ShippingUnit() {

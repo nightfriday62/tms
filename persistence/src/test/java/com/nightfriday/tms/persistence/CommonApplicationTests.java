@@ -11,6 +11,7 @@ import com.nightfriday.tms.persistence.truckshipment.Truck_Shipment;
 import com.nightfriday.tms.persistence.truckshipment.Truck_ShipmentRepository;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -111,6 +112,8 @@ class CommonApplicationTests {
     ShippingUnit shippingUnit =
         shippingUnitRepository.findByDescription("This is a test shipping unit");
     assertThat(shippingUnit.getDescription()).isEqualTo("This is a test shipping unit");
+    List<ShippingUnit> shippingUnit1 = shippingUnitRepository.findByDescriptionContainingIgnoreCase("tEst");
+    assertThat(shippingUnit1.get(0).getDescription()).isEqualTo("This is a test shipping unit");
   }
 
   @Test

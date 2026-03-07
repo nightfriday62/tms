@@ -19,7 +19,7 @@ public class ShippingUnit {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long Id;
+  private Long id;
   private String description;
   private BigDecimal weight; // in tons
   private BigDecimal height; // in meters
@@ -32,8 +32,26 @@ public class ShippingUnit {
   private List<Shipment_ShippingUnit> shipments = new ArrayList<>();
   public ShippingUnit() {}
 
+  public ShippingUnit(String description, BigDecimal weight, BigDecimal height, BigDecimal width,BigDecimal length, BigDecimal volume) {
+    this.description = description;
+    this.weight = weight;
+    this.height = height;
+    this.width = width;
+    this.length = length;
+    this.volume = volume;
+  }
+
+  public ShippingUnit(String description, double weight, double height, double width, double length, double volume) {
+    this.description = description;
+    this.weight = BigDecimal.valueOf(weight);
+    this.height = BigDecimal.valueOf(height);
+    this.width = BigDecimal.valueOf(width);
+    this.length = BigDecimal.valueOf(length);
+    this.volume = BigDecimal.valueOf(volume);
+  }
+
   public long getId() {
-    return Id;
+    return id;
   }
 
   public String getDescription() {
