@@ -58,12 +58,18 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     <packaging>pom</packaging>
     <modules>
         <module>persistence</module>
         <module>app</module>
         <module>services</module>
+        <module>web</module>
     </modules>
     <build>
         <plugins>

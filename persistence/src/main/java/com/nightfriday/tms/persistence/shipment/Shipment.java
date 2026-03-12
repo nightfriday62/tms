@@ -48,6 +48,7 @@ public class Shipment {
   }
 
   public void setTrucks(Truck truck) {
+    if (truck == null) return;
     Truck_Shipment ts = new Truck_Shipment();
     ts.setTruck(truck);
     ts.setShipment(this);
@@ -62,9 +63,92 @@ public class Shipment {
     return shippingUnits;
   }
   public void setShippingUnits(ShippingUnit shippingUnit) {
+    if(shippingUnit == null) return;
     Shipment_ShippingUnit shipment_ShippingUnit = new Shipment_ShippingUnit();
     shipment_ShippingUnit.setShipment(this);
     shipment_ShippingUnit.setShippingUnit(shippingUnit);
     this.shippingUnits.add(shipment_ShippingUnit);
+  }
+
+  public String getOrigin() {
+    return origin;
+  }
+
+  public void setOrigin(String origin) {
+    this.origin = origin;
+  }
+
+  public String getDestination() {
+    return destination;
+  }
+
+  public void setDestination(String destination) {
+    this.destination = destination;
+  }
+
+  public BigDecimal getWeight() {
+    return weight;
+  }
+
+  public void setWeight(BigDecimal weight) {
+    this.weight = weight;
+  }
+
+  public BigDecimal getVolume() {
+    return volume;
+  }
+
+  public void setVolume(BigDecimal volume) {
+    this.volume = volume;
+  }
+
+  public ShipmentStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(ShipmentStatus status) {
+    this.status = status;
+  }
+
+  public LocalDate getScheduledShipmentDate() {
+    return scheduledShipmentDate;
+  }
+
+  public void setScheduledShipmentDate(LocalDate scheduledShipmentDate) {
+    this.scheduledShipmentDate = scheduledShipmentDate;
+  }
+
+  public LocalDate getActualShipmentDate() {
+    return actualShipmentDate;
+  }
+
+  public void setActualShipmentDate(LocalDate actualShipmentDate) {
+    this.actualShipmentDate = actualShipmentDate;
+  }
+
+  public LocalDate getScheduledDeliveryDate() {
+    return scheduledDeliveryDate;
+  }
+
+  public void setScheduledDeliveryDate(LocalDate scheduledDeliveryDate) {
+    this.scheduledDeliveryDate = scheduledDeliveryDate;
+  }
+
+  public LocalDate getActualDeliveryDate() {
+    return actualDeliveryDate;
+  }
+
+  public void setActualDeliveryDate(LocalDate actualDeliveryDate) {
+    this.actualDeliveryDate = actualDeliveryDate;
+  }
+
+  public void setTrucks(
+      List<Truck_Shipment> trucks) {
+    this.trucks = trucks;
+  }
+
+  public void setShippingUnits(
+      List<Shipment_ShippingUnit> shippingUnits) {
+    this.shippingUnits = shippingUnits;
   }
 }

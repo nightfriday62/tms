@@ -17,11 +17,11 @@ public class Shipment_ShippingUnit {
   @GeneratedValue
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "SHIPMENT_NUMBER", referencedColumnName = "shipmentNumber", nullable = false)
   private Shipment shipment;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "SHIPPING_UNIT_ID", referencedColumnName = "id", nullable = false)
   private ShippingUnit shippingUnit;
 

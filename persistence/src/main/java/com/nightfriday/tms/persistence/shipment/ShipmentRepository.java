@@ -1,10 +1,8 @@
 package com.nightfriday.tms.persistence.shipment;
 
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface ShipmentRepository extends Repository<Shipment, String> {
-    Shipment findByShipmentNumber(String shipmentNumber);
-    Shipment save(Shipment shipment);
-
+public interface ShipmentRepository extends JpaRepository<Shipment, String> {
+  Shipment findByShipmentNumber(String shipmentNumber);
 }

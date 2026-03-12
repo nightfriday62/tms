@@ -3,7 +3,9 @@ package com.nightfriday.tms.services.shippingUnitService;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ShippingUnitServiceImpl implements ShippingUnitService {
   @Autowired
   ShippingUnitRepository shippingUnitRepository;

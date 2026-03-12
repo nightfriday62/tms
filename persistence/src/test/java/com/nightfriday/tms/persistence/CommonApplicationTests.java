@@ -119,7 +119,7 @@ class CommonApplicationTests {
   @Test
   @Transactional
   void testDeleteTruckShipmentAndNotDeleteShipment() {
-/*    Shipment shipment = new Shipment();
+    /*Shipment shipment = new Shipment();
     shipment.setShipmentNumber("SHP123456");
     Truck truck = new Truck();
     truck.setPlateNumber("TRK123456");
@@ -131,7 +131,7 @@ class CommonApplicationTests {
     truck.getShipments().add(ts);
     shipment.getTrucks().add(ts);
     Shipment saved = shipmentRepository.save(shipment);
-    //truckRepository.save(truck);*/
+    //truckRepository.save(truck); */
 
     truckTransaction.saveTruck();
 

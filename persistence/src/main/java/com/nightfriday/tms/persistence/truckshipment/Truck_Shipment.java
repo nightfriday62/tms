@@ -15,7 +15,7 @@ import java.sql.Date;
 public class Truck_Shipment {
   @Id
   @GeneratedValue
-  private long id;
+  private Long id;
 
   @ManyToOne
   @JoinColumn(name = "TRUCK_PLATE_NUMBER", referencedColumnName = "plateNumber", nullable = false)

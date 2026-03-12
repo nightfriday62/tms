@@ -1,0 +1,203 @@
+package com.nightfriday.tms.services;
+
+import static org.assertj.core.api.Assertions.*;
+
+import com.nightfriday.tms.persistence.shipment.Shipment;
+import com.nightfriday.tms.persistence.shipmentunit.Shipment_ShippingUnit;
+import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
+import com.nightfriday.tms.persistence.truck.Truck;
+import com.nightfriday.tms.persistence.truck.TruckRepository;
+import com.nightfriday.tms.persistence.truck.TruckType;
+import com.nightfriday.tms.services.ShipmentService.ShipmentService;
+import com.nightfriday.tms.services.shippingUnitService.ShippingUnitService;
+import com.nightfriday.tms.services.truckService.TruckService;
+import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+
+@SpringBootTest
+class ServicesApplicationTests {
+  @Autowired
+  private TruckService truckService;
+  @Autowired
+  private TruckRepository truckRepository;
+  @Autowired
+  private ShippingUnitService shippingUnitService;
+  @Autowired
+  private ShipmentService shipmentService;
+  @Autowired
+  private EntityManager em;
+  private void inspectShipmentSession(com.nightfriday.tms.persistence.shipment.Shipment shipment) {
+    org.hibernate.Session session = em.unwrap(org.hibernate.Session.class);
+    System.out.println("session.isOpen() = " + session.isOpen());
+    System.out.println("session.isConnected() = " + session.isConnected());
+    System.out.println("em.contains(shipment) = " + em.contains(shipment));
+    System.out.println("shipment runtime class = " + shipment.getClass().getName());
+    Object shippingUnits = shipment.getShippingUnits();
+    System.out.println("shippingUnits runtime class = " + (shippingUnits == null ? "null" : shippingUnits.getClass().getName()));
+    System.out.println("Hibernate.isInitialized(shippingUnits) = " + org.hibernate.Hibernate.isInitialized(shippingUnits));
+    System.out.println("PUUtil.isLoaded(shippingUnits) = " + em.getEntityManagerFactory()
+        .getPersistenceUnitUtil().isLoaded(shipment, "shippingUnits"));
+
+    // Optionally initialize while session is open:
+    if (!org.hibernate.Hibernate.isInitialized(shippingUnits)) {
+      org.hibernate.Hibernate.initialize(shippingUnits);
+      System.out.println("shippingUnits initialized via Hibernate.initialize()");
+    }
+  }
+  @Test
+  void contextLoads() {
+  }
+
+  @Test
+  void testCreateTruck() {
+    Truck savedTruck =
+        truckService.createTruck("ABC123", TruckType.RIGID, "Volvo", "FH16", 20.5, 18.0, null,
+            null);
+    Truck fetchedTruck = truckRepository.findByPlateNumber("ABC123");
+    assertThat(fetchedTruck).isNotNull();
+    assertThat(fetchedTruck.getPlateNumber()).isEqualTo("ABC123");
+    assertThat(fetchedTruck.getBrand()).isEqualTo("Volvo");
+  }
+
+  @Test
+  void testDeleteTruck() {
+    truckService.createTruck("DEL123", TruckType.RIGID, "Scania", "R500", 25.0, 20.0, null,
+        null);
+    Truck fetchedTruck = truckRepository.findByPlateNumber("DEL123");
+    assertThat(fetchedTruck).isNotNull();
+    truckService.deleteTruck("DEL123");
+    Truck deletedTruck = truckRepository.findByPlateNumber("DEL123");
+    assertThat(deletedTruck).isNull();
+  }
+
+  @Test
+  void testDeleteTruck_NotFound() {
+    assertThatThrownBy(() -> truckService.deleteTruck("NONEXISTENT"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Truck not found");
+  }
+
+  @Test
+  void testCreateShippingUnit() {
+    ShippingUnit savedUnit =
+        shippingUnitService.createShippingUnit("Test Unit", 10.0, 1.0, 1.0, 1.0, 1.0);
+    ShippingUnit fetchedUnit = shippingUnitService.getShippingUnitById(savedUnit.getId());
+    assertThat(fetchedUnit).isNotNull();
+    assertThat(fetchedUnit.getDescription()).isEqualTo("Test Unit");
+    assertThat(fetchedUnit.getWeight()).isEqualByComparingTo(BigDecimal.valueOf(10.00));
+  }
+
+  @Test
+  void testDeleteShippingUnit() {
+    ShippingUnit savedUnit =
+        shippingUnitService.createShippingUnit("Delete Unit", 5.0, 0.5, 0.5, 0.5, 0.125);
+    ShippingUnit fetchedUnit = shippingUnitService.getShippingUnitById(savedUnit.getId());
+    assertThat(fetchedUnit).isNotNull();
+    shippingUnitService.deleteShippingUnit(savedUnit.getId());
+    assertThatThrownBy(() -> shippingUnitService.getShippingUnitById(savedUnit.getId()))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Shipping unit with id " + savedUnit.getId() + " not found");
+  }
+
+  @Test
+  void testGetShippingUnitByDescription() {
+    ShippingUnit savedUnit =
+        shippingUnitService.createShippingUnit("Unique Description", 2.0, 0.2, 0.2, 0.2, 0.008);
+    ShippingUnit fetchedUnit =
+        shippingUnitService.getShippingUnitByDescription("Unique Description");
+    assertThat(fetchedUnit).isNotNull();
+    assertThat(fetchedUnit.getId()).isEqualTo(savedUnit.getId());
+    assertThat(fetchedUnit.getDescription()).isEqualTo("Unique Description");
+  }
+
+  @Test
+  void testGetShippingUnitByDescription_NotFound() {
+    assertThatThrownBy(
+        () -> shippingUnitService.getShippingUnitByDescription("Nonexistent Description"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Shipping unit with description Nonexistent Description not found");
+  }
+
+  @Test
+  void testSearchShippingUnitsByDescription() {
+    ShippingUnit unit1 =
+        shippingUnitService.createShippingUnit("Searchable Unit One", 1.0, 0.1, 0.1, 0.1, 0.001);
+    ShippingUnit unit2 =
+        shippingUnitService.createShippingUnit("Searchable Unit Two", 2.0, 0.2, 0.2, 0.2, 0.008);
+    ShippingUnit unit3 =
+        shippingUnitService.createShippingUnit("Another Unit", 3.0, 0.3, 0.3, 0.3, 0.027);
+
+    java.util.List<ShippingUnit> results =
+        shippingUnitService.searchShippingUnitsByDescription("Searchable");
+    assertThat(results).hasSize(2);
+    assertThat(results).extracting(ShippingUnit::getId)
+        .containsExactlyInAnyOrder(unit1.getId(), unit2.getId());
+    List<ShippingUnit> single = shippingUnitService.searchShippingUnitsByDescription("Another");
+    assertThat(single).hasSize(1);
+    assertThat(single.get(0).getId()).isEqualTo(unit3.getId());
+  }
+
+  @Test
+  @Transactional
+  void testCreateShipment() {
+    ShippingUnit unit1 =
+        shippingUnitService.createShippingUnit("Shipment Unit One", 1.0, 0.1, 0.1, 0.1, 0.001);
+    ShippingUnit unit2 =
+        shippingUnitService.createShippingUnit("Shipment Unit Two", 2.0, 0.2, 0.2, 0.2, 0.008);
+    Shipment shipment = shipmentService.createShipment("SHIP123", "City A", "City B", 3.0, 0.3,
+        "2024-07-01", "2024-07-05", List.of(unit1, unit2));
+    assertThat(shipment).isNotNull();
+    assertThat(shipment.getShipmentNumber()).isEqualTo("SHIP123");
+    assertThat(shipment.getOrigin()).isEqualTo("City A");
+    assertThat(shipment.getDestination()).isEqualTo("City B");
+    assertThat(shipment.getWeight()).isEqualByComparingTo(BigDecimal.valueOf(3.00));
+    assertThat(shipment.getVolume()).isEqualByComparingTo(BigDecimal.valueOf(0.30));
+    assertThat(shipment.getShippingUnits()).hasSize(2);
+    assertThat(shipment.getShippingUnits()).extracting(s -> s.getShippingUnit().getId())
+        .containsExactlyInAnyOrder(unit1.getId(), unit2.getId());
+  }
+
+  @Test
+  void testDeleteShipment() {
+    Shipment shipment = shipmentService.createShipment("SHIPDEL", "City X", "City Y", 5.0, 0.5,
+        "2024-07-10", "2024-07-15", List.of());
+    assertThat(shipment).isNotNull();
+    shipmentService.deleteShipment("SHIPDEL");
+    assertThatThrownBy(() -> shipmentService.getShipmentById("SHIPDEL"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Shipment with number SHIPDEL not found");
+  }
+
+  @Test
+  @Transactional
+  void testAssignTruckToShipment() {
+    Truck truck = truckService.createTruck("TRUCK123", TruckType.RIGID, "MAN", "TGS", 25.0, 20.0, null, null);
+    Shipment shipment = shipmentService.createShipment("SHIPTRUCK", "City C", "City D", 4.0, 0.4, "2024-07-20", "2024-07-25", List.of());
+    Shipment updatedShipment = shipmentService.addTruckToShipment("SHIPTRUCK", "TRUCK123");
+    assertThat(updatedShipment).isNotNull();
+    assertThat(updatedShipment.getTrucks()).hasSize(1);
+    assertThat(updatedShipment.getTrucks().getFirst().getTruck().getPlateNumber()).isEqualTo("TRUCK123");
+  }
+
+  @Test
+  @Transactional
+  void testAddShippingUnitToShipment() {
+    ShippingUnit unit = shippingUnitService.createShippingUnit("Additional Unit", 1.0, 0.1, 0.1, 0.1, 0.001);
+    Shipment shipment = shipmentService.createShipment("SHIPADDUNIT", "City E", "City F", 2.0, 0.2, "2024-07-30", "2024-08-05", List.of());
+    inspectShipmentSession(shipment);
+    Shipment updatedShipment = shipmentService.addShippingUnitToShipment("SHIPADDUNIT", unit);
+    inspectShipmentSession(shipment);
+    assertThat(updatedShipment).isNotNull();
+    assertThat(updatedShipment.getShippingUnits()).hasSize(1);
+    assertThat(updatedShipment.getShippingUnits().getFirst().getShippingUnit().getId()).isEqualTo(unit.getId());
+  }
+
+
+
+}
