@@ -4,7 +4,7 @@ import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import java.util.List;
 
 public interface ShippingUnitService {
-  ShippingUnit createShippingUnit(String description, double weight, double height, double width, double length, double volume);
+  ShippingUnit createShippingUnit(ShippingUnit shippingUnit);
   void deleteShippingUnit(long id);
   ShippingUnit getShippingUnitById(long id);
   ShippingUnit getShippingUnitByDescription(String description);

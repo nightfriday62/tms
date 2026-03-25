@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface TruckRepository extends JpaRepository<Truck, String> {
 
-  Truck findByPlateNumber(String plateNumber);
+  Optional<Truck> findByPlateNumber(String plateNumber);
 
-  Truck findFirstByBrand(String brand);
+  Optional<Truck> findFirstByBrand(String brand);
 
   @Modifying
   @Query("UPDATE Truck t SET t.active = true, t.deletedAt = null WHERE t.plateNumber = :plateNumber")

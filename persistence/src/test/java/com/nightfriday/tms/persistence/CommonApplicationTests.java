@@ -12,6 +12,7 @@ import com.nightfriday.tms.persistence.truckshipment.Truck_ShipmentRepository;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,7 +55,11 @@ class CommonApplicationTests {
     truck.setActive(true);
     Truck saved = truckTransaction.saveTruck();
     System.out.println(saved.getPlateNumber());
-    Truck returned = truckRepository.findByPlateNumber(saved.getPlateNumber());
+    Optional<Truck> returned2 = truckRepository.findByPlateNumber(saved.getPlateNumber());
+    Truck returned = null;
+    if (returned2.isPresent()) {
+      returned = returned2.get();
+    }
     assertEquals(returned.getPlateNumber(), saved.getPlateNumber());
   }
 
@@ -84,7 +89,7 @@ class CommonApplicationTests {
     truckRepository.save(truck);
     shipment.setTrucks(truck);
     Shipment saved = shipmentRepository.save(shipment);
-    Shipment returned = shipmentRepository.findByShipmentNumber(saved.getShipmentNumber());
+    Shipment returned = shipmentRepository.findByShipmentNumber(saved.getShipmentNumber()).get();
     assertThat(returned.getShipmentNumber()).isEqualTo("SHP123456");
     assertThat(returned.getTrucks()).hasSize(1);
     assertThat(returned.getTrucks().get(0).getTruck().getPlateNumber()).isEqualTo("TRK123456");
@@ -103,7 +108,7 @@ class CommonApplicationTests {
     shipment.setShippingUnits(unit);
     shippingUnitRepository.save(unit);
     Shipment saved = shipmentRepository.save(shipment);
-    Shipment returned = shipmentRepository.findByShipmentNumber(saved.getShipmentNumber());
+    Shipment returned = shipmentRepository.findByShipmentNumber(saved.getShipmentNumber()).get();
     assertThat(returned.getShipmentNumber()).isEqualTo("SHP123456");
     assertThat(returned.getShippingUnits()).hasSize(1);
     assertThat(returned.getShippingUnits().get(0).getShippingUnit().getDescription()).isEqualTo(
@@ -135,14 +140,18 @@ class CommonApplicationTests {
 
     truckTransaction.saveTruck();
 
-    Shipment returned = shipmentRepository.findByShipmentNumber("SHP123456");
-    assertThat(returned.getShipmentNumber()).isEqualTo("SHP123456");
-    assertThat(returned.getTrucks()).hasSize(1);
-    assertThat(returned.getTrucks().get(0).getTruck().getPlateNumber()).isEqualTo("TRK123456");
-    System.out.println(returned.getTrucks().get(0).getTruck().getPlateNumber());
-    System.out.println(returned.getTrucks().get(0).getId());
-    Truck truckAfter = truckRepository.findByPlateNumber("TRK123456");
-    System.out.println(truckAfter.getPlateNumber());
+    shipmentRepository.findByShipmentNumber("SHP123456").ifPresentOrElse(
+        returned -> {assertThat(returned.getShipmentNumber()).isEqualTo("SHP123456");
+          assertThat(returned.getShipmentNumber()).isEqualTo("SHP123456");
+          assertThat(returned.getTrucks()).hasSize(1);
+          assertThat(returned.getTrucks().get(0).getTruck().getPlateNumber()).isEqualTo("TRK123456");},
+        () -> fail("Shipment not found")
+    );
+    Optional<Truck> truckAfter2 = truckRepository.findByPlateNumber("TRK123456");
+    Truck truckAfter = null;
+    if (truckAfter2.isPresent()) {
+      truckAfter = truckAfter2.get();
+    }
     assertThat(truckAfter.getShipments()).hasSize(1);
     assertThat(truck_shipmentRepository.findAll()).hasSize(1);
   }

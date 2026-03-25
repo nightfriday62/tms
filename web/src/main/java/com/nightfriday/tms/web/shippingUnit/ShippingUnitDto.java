@@ -1,5 +1,6 @@
 package com.nightfriday.tms.web.shippingUnit;
 
+import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.DecimalMin;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.DecimalMin;
 
 public class ShippingUnitDto {
   private Long id;
+  @NotBlank
   @Size(max = 255, message = "Description must be at most 255 characters")
   private String description;
   @DecimalMin(value = "0.0", inclusive = false, message = "Weight must be greater than 0")

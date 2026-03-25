@@ -1,10 +1,7 @@
 package com.nightfriday.tms.persistence.shipmentunit;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface Shipment_ShippingUnitRepository
-    extends CrudRepository<Shipment_ShippingUnit, Long> {
-  Shipment_ShippingUnit save(Shipment_ShippingUnit shipment_shippingUnit);
-
-  Shipment_ShippingUnit findById(long id);
+    extends JpaRepository<Shipment_ShippingUnit, Long> {
 }

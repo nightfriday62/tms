@@ -11,9 +11,7 @@ public class ShippingUnitServiceImpl implements ShippingUnitService {
   ShippingUnitRepository shippingUnitRepository;
 
   @Override
-  public ShippingUnit createShippingUnit(String description, double weight, double height,
-                                         double width, double length, double volume) {
-    ShippingUnit shippingUnit = new ShippingUnit(description, weight, height, width, length, volume);
+  public ShippingUnit createShippingUnit(ShippingUnit shippingUnit) {
     return shippingUnitRepository.save(shippingUnit);
   }
 

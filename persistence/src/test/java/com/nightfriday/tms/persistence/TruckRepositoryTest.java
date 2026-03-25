@@ -3,6 +3,7 @@ package com.nightfriday.tms.persistence;
 
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -24,7 +25,11 @@ class TruckRepositoryTest {
     truck.setActive(true);
     truckRepository.saveAndFlush(truck);
 
-    Truck found = truckRepository.findByPlateNumber("ABC123");
+    Optional<Truck> found2 = truckRepository.findByPlateNumber("ABC123");
+    Truck found = null;
+    if  (found2.isPresent()) {
+      found = found2.get();
+    }
     assertThat(found).isNotNull();
     assertThat(found.getPlateNumber()).isEqualTo("ABC123");
   }
@@ -38,7 +43,12 @@ class TruckRepositoryTest {
     truckRepository.saveAndFlush(truck);
 
 
-    Truck found = truckRepository.findFirstByBrand("Volvo");
+    Optional<Truck> found2 = truckRepository.findFirstByBrand("Volvo");
+    assertThat(found2).isNotNull();
+    Truck found = null;
+    if (found2.isPresent()) {
+      found = found2.get();
+    }
     assertThat(found).isNotNull();
     assertThat(found.getPlateNumber()).isEqualTo("XYZ789");
     assertThat(found.getBrand()).isEqualTo("Volvo");
