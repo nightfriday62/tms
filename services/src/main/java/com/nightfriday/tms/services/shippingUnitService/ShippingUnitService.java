@@ -5,8 +5,8 @@ import java.util.List;
 
 public interface ShippingUnitService {
   ShippingUnit createShippingUnit(ShippingUnit shippingUnit);
-  void deleteShippingUnit(long id);
-  ShippingUnit getShippingUnitById(long id);
-  ShippingUnit getShippingUnitByDescription(String description);
+  void deleteShippingUnit(Long id);
+  ShippingUnit getShippingUnitById(Long id);
+  List<ShippingUnit> getShippingUnitByDescription(String description);
   List<ShippingUnit> searchShippingUnitsByDescription(String description);
 }

@@ -5,6 +5,7 @@ import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
 import com.nightfriday.tms.persistence.truck.TruckType;
 import java.math.BigDecimal;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,20 +53,20 @@ public class TruckServiceImpl implements TruckService {
   // Actual deletion is handled by @SQLDelete annotation in Truck entity
   @Override
   public void deleteTruck(String plateNumber) {
-    Truck truck = truckRepository.findByPlateNumber(plateNumber);
-    if (truck == null) {
+    Optional<Truck> truck = truckRepository.findByPlateNumber(plateNumber);
+    if (truck.isEmpty()) {
       throw new IllegalArgumentException("Truck not found");
     }
-    truckRepository.delete(truck);
+    truckRepository.delete(truck.get());
 
   }
 
   @Override
   public Truck getTruckByPlateNumber(String plateNumber) {
-    Truck truck = truckRepository.findByPlateNumber(plateNumber);
-    if (truck == null) {
+    Optional<Truck> truck = truckRepository.findByPlateNumber(plateNumber);
+    if (truck.isEmpty()) {
       throw new IllegalArgumentException("Truck not found");
     }
-    return truck;
+    return truck.orElse(null);
   }
 }

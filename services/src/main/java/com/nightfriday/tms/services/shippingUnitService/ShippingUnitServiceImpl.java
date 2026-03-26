@@ -2,6 +2,8 @@ package com.nightfriday.tms.services.shippingUnitService;
 
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnitRepository;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,30 +18,26 @@ public class ShippingUnitServiceImpl implements ShippingUnitService {
   }
 
   @Override
-  public ShippingUnit getShippingUnitById(long id) {
-    ShippingUnit unit = shippingUnitRepository.findById(id);
-    if (unit == null) {
+  public ShippingUnit getShippingUnitById(Long id) {
+    Optional<ShippingUnit> unit = shippingUnitRepository.findById(id);
+    if (unit.isEmpty()) {
       throw new IllegalArgumentException("Shipping unit with id " + id + " not found");
     }
-    return unit;
+    return unit.orElse(null);
   }
 
   @Override
-    public void deleteShippingUnit(long id) {
-        ShippingUnit unit = shippingUnitRepository.findById(id);
-        if (unit == null) {
+    public void deleteShippingUnit(Long id) {
+        Optional<ShippingUnit> unit = shippingUnitRepository.findById(id);
+        if (unit.isEmpty()) {
         throw new IllegalArgumentException("Shipping unit with id " + id + " not found");
         }
-        shippingUnitRepository.delete(unit);
+        shippingUnitRepository.delete(unit.get());
     }
 
   @Override
-  public ShippingUnit getShippingUnitByDescription(String description) {
-      ShippingUnit unit = shippingUnitRepository.findByDescription(description);
-      if (unit == null) {
-      throw new IllegalArgumentException("Shipping unit with description " + description + " not found");
-      }
-      return unit;
+  public List<ShippingUnit> getShippingUnitByDescription(String description) {
+    return shippingUnitRepository.findByDescription(description);
   }
   @Override
     public java.util.List<ShippingUnit> searchShippingUnitsByDescription(String description) {

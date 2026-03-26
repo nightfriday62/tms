@@ -8,6 +8,7 @@ import com.nightfriday.tms.persistence.truck.TruckRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,11 @@ public class ShipmentServiceImpl implements ShipmentService {
 
   @Override
   public Shipment getShipmentById(String shipmentNumber) {
-    Shipment shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
-    if (shipment == null) {
+    Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
+    if (shipment.isEmpty()) {
       throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
     }
-    return shipment;
+    return shipment.get();
   }
 
   @Override
@@ -48,34 +49,34 @@ public class ShipmentServiceImpl implements ShipmentService {
 
   @Override
   public void deleteShipment(String shipmentNumber) {
-    Shipment shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
-    if (shipment == null) {
+    Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
+    if (shipment.isEmpty()) {
       throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
     }
-    shipmentRepository.delete(shipment);
+    shipmentRepository.delete(shipment.get());
   }
 
   @Override
   public Shipment addShippingUnitToShipment(String shipmentNumber, ShippingUnit shippingUnit) {
-    Shipment shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
-    if (shipment == null) {
+    Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
+    if (shipment.isEmpty()) {
       throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
     }
-    shipment.setShippingUnits(shippingUnit);
-    return shipmentRepository.save(shipment);
+    shipment.get().setShippingUnits(shippingUnit);
+    return shipmentRepository.save(shipment.get());
   }
 
   @Override
   public Shipment addTruckToShipment(String shipmentNumber, String plateNumber) {
-    Truck truck = truckRepository.findByPlateNumber(plateNumber);
-    if (truck == null) {
+    Optional<Truck> truck = truckRepository.findByPlateNumber(plateNumber);
+    if (truck.isEmpty()) {
       throw new IllegalArgumentException("Truck with plate number " + plateNumber + " not found");
     }
-    Shipment shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
-    if (shipment == null) {
+    Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
+    if (shipment.isEmpty()) {
       throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
     }
-    shipment.setTrucks(truck);
-    return shipmentRepository.save(shipment);
+    shipment.get().setTrucks(truck.orElse(null));
+    return shipmentRepository.save(shipment.get());
   }
 }
