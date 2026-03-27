@@ -70,7 +70,7 @@ class CommonApplicationTests {
     unit.setLength(BigDecimal.valueOf(3.33));
     unit.setHeight(BigDecimal.valueOf(4.44));
     ShippingUnit saved = shippingUnitRepository.save(unit);
-    ShippingUnit returned = shippingUnitRepository.findById(saved.getId());
+    ShippingUnit returned = shippingUnitRepository.findById(saved.getId()).get();
     assertEquals(returned.getId(), saved.getId());
     assertEquals(returned.getDescription(), saved.getDescription());
     assertEquals(returned.getWeight(), saved.getWeight());
@@ -114,7 +114,7 @@ class CommonApplicationTests {
         "This is a test shipping unit");
 
     ShippingUnit shippingUnit =
-        shippingUnitRepository.findByDescription("This is a test shipping unit");
+        shippingUnitRepository.findByDescription("This is a test shipping unit").get(0);
     assertThat(shippingUnit.getDescription()).isEqualTo("This is a test shipping unit");
     List<ShippingUnit> shippingUnit1 = shippingUnitRepository.findByDescriptionContainingIgnoreCase("tEst");
     assertThat(shippingUnit1.get(0).getDescription()).isEqualTo("This is a test shipping unit");
