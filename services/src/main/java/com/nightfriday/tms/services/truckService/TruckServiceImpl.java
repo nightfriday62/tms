@@ -47,7 +47,24 @@ public class TruckServiceImpl implements TruckService {
         trailerType, trailerPlateNumber);
     return truckRepository.save(newTruck);
   }
+  @Override
+  public Truck createTruck(Truck truck) {
 
+    Truck deletedCheck = truckRepository.findDeleted(truck.getPlateNumber());
+    if (deletedCheck != null) {
+      deletedCheck.setActive(true);
+      deletedCheck.setDeletedAt(null);
+      deletedCheck.setBrand(truck.getBrand());
+      deletedCheck.setModel(truck.getModel());
+      deletedCheck.setTruckType(truck.getTruckType());
+      deletedCheck.setVolume(truck.getVolume());
+      deletedCheck.setWeight(truck.getWeight());
+      deletedCheck.setTrailerType(truck.getTrailerType());
+      deletedCheck.setTrailerPlateNumber(truck.getTrailerPlateNumber());
+      return truckRepository.save(deletedCheck);
+    }
+    return truckRepository.save(truck);
+  }
   // Soft delete by setting active to false
   // and setting deletedAt to current timestamp
   // Actual deletion is handled by @SQLDelete annotation in Truck entity
@@ -55,7 +72,7 @@ public class TruckServiceImpl implements TruckService {
   public void deleteTruck(String plateNumber) {
     Optional<Truck> truck = truckRepository.findByPlateNumber(plateNumber);
     if (truck.isEmpty()) {
-      throw new IllegalArgumentException("Truck not found");
+      throw new TruckNotFoundException(plateNumber);
     }
     truckRepository.delete(truck.get());
 
@@ -65,8 +82,8 @@ public class TruckServiceImpl implements TruckService {
   public Truck getTruckByPlateNumber(String plateNumber) {
     Optional<Truck> truck = truckRepository.findByPlateNumber(plateNumber);
     if (truck.isEmpty()) {
-      throw new IllegalArgumentException("Truck not found");
+      throw new TruckNotFoundException(plateNumber);
     }
-    return truck.orElse(null);
+    return truck.get();
   }
 }

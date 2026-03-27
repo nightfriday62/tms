@@ -47,7 +47,7 @@ public class Shipment {
     this.shipmentNumber = shipmentNumber;
   }
 
-  public void setTrucks(Truck truck) {
+  public void assignTruck(Truck truck) {
     if (truck == null) return;
     Truck_Shipment ts = new Truck_Shipment();
     ts.setTruck(truck);
@@ -62,7 +62,7 @@ public class Shipment {
   public List<Shipment_ShippingUnit> getShippingUnits() {
     return shippingUnits;
   }
-  public void setShippingUnits(ShippingUnit shippingUnit) {
+  public void addShippingUnit(ShippingUnit shippingUnit) {
     if(shippingUnit == null) return;
     Shipment_ShippingUnit shipment_ShippingUnit = new Shipment_ShippingUnit();
     shipment_ShippingUnit.setShipment(this);

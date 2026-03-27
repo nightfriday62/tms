@@ -5,6 +5,7 @@ import com.nightfriday.tms.persistence.shipment.ShipmentRepository;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
+import com.nightfriday.tms.services.truckService.TruckNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ShipmentServiceImpl implements ShipmentService {
   public Shipment getShipmentById(String shipmentNumber) {
     Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
     if (shipment.isEmpty()) {
-      throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
+      throw new ShipmentNotFoundException(shipmentNumber);
     }
     return shipment.get();
   }
@@ -42,7 +43,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     newShipment.setScheduledShipmentDate(LocalDate.parse(scheduledShipmentDate));
     newShipment.setScheduledDeliveryDate(LocalDate.parse(scheduledDeliveryDate));
     for (ShippingUnit unit : shippingUnits) {
-      newShipment.setShippingUnits(unit);
+      newShipment.addShippingUnit(unit);
     }
     return shipmentRepository.save(newShipment);
   }
@@ -51,7 +52,7 @@ public class ShipmentServiceImpl implements ShipmentService {
   public void deleteShipment(String shipmentNumber) {
     Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
     if (shipment.isEmpty()) {
-      throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
+      throw new ShipmentNotFoundException(shipmentNumber);
     }
     shipmentRepository.delete(shipment.get());
   }
@@ -60,9 +61,9 @@ public class ShipmentServiceImpl implements ShipmentService {
   public Shipment addShippingUnitToShipment(String shipmentNumber, ShippingUnit shippingUnit) {
     Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
     if (shipment.isEmpty()) {
-      throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
+      throw new ShipmentNotFoundException(shipmentNumber);
     }
-    shipment.get().setShippingUnits(shippingUnit);
+    shipment.get().addShippingUnit(shippingUnit);
     return shipmentRepository.save(shipment.get());
   }
 
@@ -70,13 +71,13 @@ public class ShipmentServiceImpl implements ShipmentService {
   public Shipment addTruckToShipment(String shipmentNumber, String plateNumber) {
     Optional<Truck> truck = truckRepository.findByPlateNumber(plateNumber);
     if (truck.isEmpty()) {
-      throw new IllegalArgumentException("Truck with plate number " + plateNumber + " not found");
+      throw new TruckNotFoundException(plateNumber);
     }
     Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
     if (shipment.isEmpty()) {
-      throw new IllegalArgumentException("Shipment with number " + shipmentNumber + " not found");
+      throw new ShipmentNotFoundException(shipmentNumber);
     }
-    shipment.get().setTrucks(truck.orElse(null));
+    shipment.get().assignTruck(truck.get());
     return shipmentRepository.save(shipment.get());
   }
 }

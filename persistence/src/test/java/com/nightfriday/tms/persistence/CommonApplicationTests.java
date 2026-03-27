@@ -7,7 +7,6 @@ import com.nightfriday.tms.persistence.shippingUnit.ShippingUnitRepository;
 
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
-import com.nightfriday.tms.persistence.truckshipment.Truck_Shipment;
 import com.nightfriday.tms.persistence.truckshipment.Truck_ShipmentRepository;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -87,7 +86,7 @@ class CommonApplicationTests {
     Truck truck = new Truck();
     truck.setPlateNumber("TRK123456");
     truckRepository.save(truck);
-    shipment.setTrucks(truck);
+    shipment.assignTruck(truck);
     Shipment saved = shipmentRepository.save(shipment);
     Shipment returned = shipmentRepository.findByShipmentNumber(saved.getShipmentNumber()).get();
     assertThat(returned.getShipmentNumber()).isEqualTo("SHP123456");
@@ -105,7 +104,7 @@ class CommonApplicationTests {
     unit.setWeight(BigDecimal.valueOf(2.22));
     unit.setLength(BigDecimal.valueOf(3.33));
     unit.setHeight(BigDecimal.valueOf(4.44));
-    shipment.setShippingUnits(unit);
+    shipment.addShippingUnit(unit);
     shippingUnitRepository.save(unit);
     Shipment saved = shipmentRepository.save(shipment);
     Shipment returned = shipmentRepository.findByShipmentNumber(saved.getShipmentNumber()).get();

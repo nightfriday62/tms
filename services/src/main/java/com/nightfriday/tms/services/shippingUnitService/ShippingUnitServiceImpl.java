@@ -21,7 +21,7 @@ public class ShippingUnitServiceImpl implements ShippingUnitService {
   public ShippingUnit getShippingUnitById(Long id) {
     Optional<ShippingUnit> unit = shippingUnitRepository.findById(id);
     if (unit.isEmpty()) {
-      throw new IllegalArgumentException("Shipping unit with id " + id + " not found");
+      throw new ShippingUnitNotFoundException(id);
     }
     return unit.orElse(null);
   }
@@ -40,7 +40,7 @@ public class ShippingUnitServiceImpl implements ShippingUnitService {
     return shippingUnitRepository.findByDescription(description);
   }
   @Override
-    public java.util.List<ShippingUnit> searchShippingUnitsByDescription(String description) {
+    public List<ShippingUnit> searchShippingUnitsByDescription(String description) {
         return shippingUnitRepository.findByDescriptionContainingIgnoreCase(description);
     }
 }

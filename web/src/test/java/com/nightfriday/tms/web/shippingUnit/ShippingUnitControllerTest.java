@@ -2,13 +2,14 @@ package com.nightfriday.tms.web.shippingUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
+import com.nightfriday.tms.services.shippingUnitService.ShippingUnitNotFoundException;
 import com.nightfriday.tms.services.shippingUnitService.ShippingUnitService;
-import java.util.Optional;
-import org.glassfish.jaxb.core.v2.TODO;
+import com.nightfriday.tms.web.exception.ApiExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ShippingUnitController.class)
+@Import(ApiExceptionHandler.class)
 class ShippingUnitControllerTest {
 
   @Autowired
@@ -317,17 +319,14 @@ class ShippingUnitControllerTest {
   }
   @Test
   void testGetShippingUnit_NoIdFound() throws Exception {
-    when(shippingUnitService.getShippingUnitById(1L)).thenThrow(new IllegalArgumentException("No such id found"));
+    when(shippingUnitService.getShippingUnitById(1L)).thenThrow(new ShippingUnitNotFoundException(1L));
 
     mockMvc.perform(
         get("/api/shipping-units/1")
             .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isInternalServerError());
-    // TODO: change all find by id to use Optional
-    // TODO: add test for Optional.empty() case and change controller to return 404 instead of 500 when id not found
-
-
-
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message", is("Shipping unit with id 1 not found")))
+        .andExpect(jsonPath("$.error", is("NOT_FOUND")));
 
   }
 }

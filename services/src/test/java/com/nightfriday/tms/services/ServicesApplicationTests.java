@@ -7,8 +7,11 @@ import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
 import com.nightfriday.tms.persistence.truck.TruckType;
+import com.nightfriday.tms.services.ShipmentService.ShipmentNotFoundException;
 import com.nightfriday.tms.services.ShipmentService.ShipmentService;
+import com.nightfriday.tms.services.shippingUnitService.ShippingUnitNotFoundException;
 import com.nightfriday.tms.services.shippingUnitService.ShippingUnitService;
+import com.nightfriday.tms.services.truckService.TruckNotFoundException;
 import com.nightfriday.tms.services.truckService.TruckService;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -83,8 +86,8 @@ class ServicesApplicationTests {
   @Test
   void testDeleteTruck_NotFound() {
     assertThatThrownBy(() -> truckService.deleteTruck("NONEXISTENT"))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("Truck not found");
+        .isInstanceOf(TruckNotFoundException.class)
+        .hasMessageContaining("Truck NONEXISTENT not found");
   }
 
   @Test
@@ -107,7 +110,7 @@ class ServicesApplicationTests {
     assertThat(fetchedUnit).isNotNull();
     shippingUnitService.deleteShippingUnit(savedUnit.getId());
     assertThatThrownBy(() -> shippingUnitService.getShippingUnitById(savedUnit.getId()))
-        .isInstanceOf(IllegalArgumentException.class)
+        .isInstanceOf(ShippingUnitNotFoundException.class)
         .hasMessageContaining("Shipping unit with id " + savedUnit.getId() + " not found");
   }
 
@@ -188,8 +191,8 @@ class ServicesApplicationTests {
     assertThat(shipment).isNotNull();
     shipmentService.deleteShipment("SHIPDEL");
     assertThatThrownBy(() -> shipmentService.getShipmentById("SHIPDEL"))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("Shipment with number SHIPDEL not found");
+        .isInstanceOf(ShipmentNotFoundException.class)
+        .hasMessageContaining("Shipment: SHIPDEL not found");
   }
 
   @Test

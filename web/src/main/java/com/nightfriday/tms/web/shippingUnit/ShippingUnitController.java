@@ -28,7 +28,6 @@ public class ShippingUnitController {
   }
 
   @GetMapping("/shipping-units/{id}")
-  @ResponseStatus(HttpStatus.OK)
   public ShippingUnitDto findShippingUnitById(@PathVariable long id) {
     ShippingUnit unit = shippingUnitService.getShippingUnitById(id);
     return ShippingUnitMapper.toDTO(unit);

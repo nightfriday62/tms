@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 public interface TruckService {
   Truck createTruck(String plateNumber, TruckType truckType, @Nullable String brand,
                     @Nullable String model, double volume, double weight, @Nullable TrailerType trailerType, @Nullable String trailerPlateNumber);
+  Truck createTruck(Truck truck);
   void deleteTruck(String plateNumber);
   Truck getTruckByPlateNumber(String plateNumber);
 }
