@@ -7,7 +7,7 @@ import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
 import com.nightfriday.tms.services.truckService.TruckNotFoundException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +40,8 @@ public class ShipmentServiceImpl implements ShipmentService {
     newShipment.setDestination(destination);
     newShipment.setWeight(BigDecimal.valueOf(weight));
     newShipment.setVolume(BigDecimal.valueOf(volume));
-    newShipment.setScheduledShipmentDate(LocalDate.parse(scheduledShipmentDate));
-    newShipment.setScheduledDeliveryDate(LocalDate.parse(scheduledDeliveryDate));
+    newShipment.setScheduledShipmentDate(OffsetDateTime.parse(scheduledShipmentDate));
+    newShipment.setScheduledDeliveryDate(OffsetDateTime.parse(scheduledDeliveryDate));
     for (ShippingUnit unit : shippingUnits) {
       newShipment.addShippingUnit(unit);
     }

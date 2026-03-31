@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +24,10 @@ public class Shipment {
   private BigDecimal weight; // in tons
   private BigDecimal volume; // in cubic meters
   private ShipmentStatus status;
-  private LocalDate scheduledShipmentDate;
-  private LocalDate actualShipmentDate;
-  private LocalDate scheduledDeliveryDate;
-  private LocalDate actualDeliveryDate;
+  private OffsetDateTime scheduledShipmentDate;
+  private OffsetDateTime actualShipmentDate;
+  private OffsetDateTime scheduledDeliveryDate;
+  private OffsetDateTime actualDeliveryDate;
   @OneToMany(mappedBy = "shipment", orphanRemoval = true, cascade = {CascadeType.MERGE,
       CascadeType.PERSIST})
   private List<Truck_Shipment> trucks = new ArrayList<>();
@@ -110,35 +110,35 @@ public class Shipment {
     this.status = status;
   }
 
-  public LocalDate getScheduledShipmentDate() {
+  public OffsetDateTime getScheduledShipmentDate() {
     return scheduledShipmentDate;
   }
 
-  public void setScheduledShipmentDate(LocalDate scheduledShipmentDate) {
+  public void setScheduledShipmentDate(OffsetDateTime scheduledShipmentDate) {
     this.scheduledShipmentDate = scheduledShipmentDate;
   }
 
-  public LocalDate getActualShipmentDate() {
+  public OffsetDateTime getActualShipmentDate() {
     return actualShipmentDate;
   }
 
-  public void setActualShipmentDate(LocalDate actualShipmentDate) {
+  public void setActualShipmentDate(OffsetDateTime actualShipmentDate) {
     this.actualShipmentDate = actualShipmentDate;
   }
 
-  public LocalDate getScheduledDeliveryDate() {
+  public OffsetDateTime getScheduledDeliveryDate() {
     return scheduledDeliveryDate;
   }
 
-  public void setScheduledDeliveryDate(LocalDate scheduledDeliveryDate) {
+  public void setScheduledDeliveryDate(OffsetDateTime scheduledDeliveryDate) {
     this.scheduledDeliveryDate = scheduledDeliveryDate;
   }
 
-  public LocalDate getActualDeliveryDate() {
+  public OffsetDateTime getActualDeliveryDate() {
     return actualDeliveryDate;
   }
 
-  public void setActualDeliveryDate(LocalDate actualDeliveryDate) {
+  public void setActualDeliveryDate(OffsetDateTime actualDeliveryDate) {
     this.actualDeliveryDate = actualDeliveryDate;
   }
 
