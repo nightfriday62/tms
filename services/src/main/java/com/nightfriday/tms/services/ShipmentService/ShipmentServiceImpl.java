@@ -1,17 +1,23 @@
 package com.nightfriday.tms.services.ShipmentService;
 
 import com.nightfriday.tms.persistence.shipment.Shipment;
+import com.nightfriday.tms.persistence.shipment.ShipmentId;
+import com.nightfriday.tms.persistence.shipment.ShipmentIdRepository;
 import com.nightfriday.tms.persistence.shipment.ShipmentRepository;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
 import com.nightfriday.tms.services.truckService.TruckNotFoundException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ShipmentServiceImpl implements ShipmentService {
@@ -19,6 +25,8 @@ public class ShipmentServiceImpl implements ShipmentService {
   ShipmentRepository shipmentRepository;
   @Autowired
   TruckRepository truckRepository;
+  @Autowired
+  ShipmentIdRepository shipmentIdRepository;
 
   @Override
   public Shipment getShipmentById(String shipmentNumber) {
@@ -30,12 +38,12 @@ public class ShipmentServiceImpl implements ShipmentService {
   }
 
   @Override
-  public Shipment createShipment(String shipmentNumber, String origin, String destination,
+  public Shipment createShipment(String origin, String destination,
                                  double weight,
                                  double volume, String scheduledShipmentDate,
                                  String scheduledDeliveryDate, List<ShippingUnit> shippingUnits) {
     Shipment newShipment = new Shipment();
-    newShipment.setShipmentNumber(shipmentNumber);
+    newShipment.setShipmentNumber(generateOneShipmentId().toString());
     newShipment.setOrigin(origin);
     newShipment.setDestination(destination);
     newShipment.setWeight(BigDecimal.valueOf(weight));
@@ -79,5 +87,21 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
     shipment.get().assignTruck(truck.get());
     return shipmentRepository.save(shipment.get());
+  }
+  @Transactional
+  private ShipmentId generateOneShipmentId() {
+    LocalDate now = OffsetDateTime.now(ZoneOffset.UTC).toLocalDate();
+    ShipmentId find = shipmentIdRepository.findByDate(now).orElse(null);
+    if (find == null) {
+      ShipmentId shipmentId = new ShipmentId();
+      shipmentId.setDateTime(now);
+      shipmentId.setSequence("0000");
+      return shipmentIdRepository.save(shipmentId);
+    } else {
+        int sequence = Integer.parseInt(find.getSequence());
+        sequence++;
+        find.setSequence(String.format("%04d", sequence));
+        return shipmentIdRepository.save(find);
+    }
   }
 }

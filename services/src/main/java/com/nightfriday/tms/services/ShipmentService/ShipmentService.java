@@ -7,7 +7,7 @@ import java.util.List;
 public interface ShipmentService {
   Shipment getShipmentById(String shipmentNumber);
 
-  Shipment createShipment(String shipmentNumber, String origin, String destination, double weight,
+  Shipment createShipment(String origin, String destination, double weight,
                           double volume, String scheduledShipmentDate,
                           String scheduledDeliveryDate, List<ShippingUnit> shippingUnits);
 

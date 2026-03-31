@@ -3,6 +3,8 @@ package com.nightfriday.tms.services;
 import static org.assertj.core.api.Assertions.*;
 
 import com.nightfriday.tms.persistence.shipment.Shipment;
+import com.nightfriday.tms.persistence.shipment.ShipmentId;
+import com.nightfriday.tms.persistence.shipment.ShipmentIdRepository;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
@@ -15,6 +17,8 @@ import com.nightfriday.tms.services.truckService.TruckNotFoundException;
 import com.nightfriday.tms.services.truckService.TruckService;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -35,6 +39,8 @@ class ServicesApplicationTests {
   private ShipmentService shipmentService;
   @Autowired
   private EntityManager em;
+  @Autowired
+  private ShipmentIdRepository shipmentIdRepository;
 
   private void inspectShipmentSession(com.nightfriday.tms.persistence.shipment.Shipment shipment) {
     org.hibernate.Session session = em.unwrap(org.hibernate.Session.class);
@@ -166,15 +172,17 @@ class ServicesApplicationTests {
     ShippingUnit testUnit1 = new ShippingUnit("Shipment Unit One", 1.0, 0.1, 0.1, 0.1, 0.001);
     ShippingUnit testUnit2 = new ShippingUnit("Shipment Unit Two", 2.0, 0.2, 0.2, 0.2, 0.008);
 
-
+    OffsetDateTime scheduled =  OffsetDateTime.now();
+    OffsetDateTime delivery = OffsetDateTime.now();
     ShippingUnit unit1 =
         shippingUnitService.createShippingUnit(testUnit1);
     ShippingUnit unit2 =
         shippingUnitService.createShippingUnit(testUnit2);
-    Shipment shipment = shipmentService.createShipment("SHIP123", "City A", "City B", 3.0, 0.3,
-        "2024-07-01", "2024-07-05", List.of(unit1, unit2));
+    Shipment shipment = shipmentService.createShipment("City A", "City B", 3.0, 0.3,
+        scheduled.toString(), delivery.toString(), List.of(unit1, unit2));
     assertThat(shipment).isNotNull();
-    assertThat(shipment.getShipmentNumber()).isEqualTo("SHIP123");
+    ShipmentId shipmentId = shipmentIdRepository.findByDate(OffsetDateTime.now(ZoneOffset.UTC).toLocalDate()).orElse(null);
+    assertThat(shipment.getShipmentNumber()).isEqualTo(shipmentId.toString());
     assertThat(shipment.getOrigin()).isEqualTo("City A");
     assertThat(shipment.getDestination()).isEqualTo("City B");
     assertThat(shipment.getWeight()).isEqualByComparingTo(BigDecimal.valueOf(3.00));
@@ -186,24 +194,32 @@ class ServicesApplicationTests {
 
   @Test
   void testDeleteShipment() {
-    Shipment shipment = shipmentService.createShipment("SHIPDEL", "City X", "City Y", 5.0, 0.5,
-        "2024-07-10", "2024-07-15", List.of());
+    OffsetDateTime scheduled =  OffsetDateTime.now();
+    OffsetDateTime delivery = OffsetDateTime.now();
+
+    Shipment shipment = shipmentService.createShipment( "City X", "City Y", 5.0, 0.5,
+        scheduled.toString(), delivery.toString(), List.of());
     assertThat(shipment).isNotNull();
-    shipmentService.deleteShipment("SHIPDEL");
-    assertThatThrownBy(() -> shipmentService.getShipmentById("SHIPDEL"))
+    String shipmentNumber = shipment.getShipmentNumber();
+    shipmentService.deleteShipment(shipmentNumber);
+    assertThatThrownBy(() -> shipmentService.getShipmentById(shipmentNumber))
         .isInstanceOf(ShipmentNotFoundException.class)
-        .hasMessageContaining("Shipment: SHIPDEL not found");
+        .hasMessageContaining("Shipment: " + shipmentNumber +" not found");
   }
 
   @Test
   @Transactional
   void testAssignTruckToShipment() {
+    OffsetDateTime scheduled =  OffsetDateTime.now();
+    OffsetDateTime delivery = OffsetDateTime.now();
+
     Truck truck =
         truckService.createTruck("TRUCK123", TruckType.RIGID, "MAN", "TGS", 25.0, 20.0, null, null);
     Shipment shipment =
-        shipmentService.createShipment("SHIPTRUCK", "City C", "City D", 4.0, 0.4, "2024-07-20",
-            "2024-07-25", List.of());
-    Shipment updatedShipment = shipmentService.addTruckToShipment("SHIPTRUCK", "TRUCK123");
+        shipmentService.createShipment( "City C", "City D", 4.0, 0.4, scheduled.toString(),
+            delivery.toString(), List.of());
+    String shipmentNumber = shipment.getShipmentNumber();
+    Shipment updatedShipment = shipmentService.addTruckToShipment(shipmentNumber, "TRUCK123");
     assertThat(updatedShipment).isNotNull();
     assertThat(updatedShipment.getTrucks()).hasSize(1);
     assertThat(updatedShipment.getTrucks().getFirst().getTruck().getPlateNumber()).isEqualTo(
@@ -213,19 +229,28 @@ class ServicesApplicationTests {
   @Test
   @Transactional
   void testAddShippingUnitToShipment() {
+    OffsetDateTime scheduled =  OffsetDateTime.now();
+    OffsetDateTime delivery = OffsetDateTime.now();
+
     ShippingUnit testUnit1 = new ShippingUnit("Additional Unit", 1.0, 0.1, 0.1, 0.1, 0.001);
     ShippingUnit unit = shippingUnitService.createShippingUnit(testUnit1);
     Shipment shipment =
-        shipmentService.createShipment("SHIPADDUNIT", "City E", "City F", 2.0, 0.2, "2024-07-30",
-            "2024-08-05", List.of());
+        shipmentService.createShipment( "City E", "City F", 2.0, 0.2, scheduled.toString(),
+            delivery.toString(), List.of());
     inspectShipmentSession(shipment);
-    Shipment updatedShipment = shipmentService.addShippingUnitToShipment("SHIPADDUNIT", unit);
+    ShipmentId shipmentId = shipmentIdRepository.findByDate(OffsetDateTime.now(ZoneOffset.UTC).toLocalDate()).orElse(null);
+    Shipment updatedShipment = shipmentService.addShippingUnitToShipment(shipmentId.toString(), unit);
     inspectShipmentSession(shipment);
+
     assertThat(updatedShipment).isNotNull();
     assertThat(updatedShipment.getShippingUnits()).hasSize(1);
     assertThat(updatedShipment.getShippingUnits().getFirst().getShippingUnit().getId()).isEqualTo(
         unit.getId());
+    Shipment shipment2 =
+        shipmentService.createShipment( "City E", "City F", 2.0, 0.2, scheduled.toString(),
+            delivery.toString(), List.of());
+    ShipmentId shipmentId2 = shipmentIdRepository.findByDate(OffsetDateTime.now(ZoneOffset.UTC).toLocalDate()).orElse(null);
+    System.out.println(shipmentId2.getSequence());
+    assertThat(shipment2.getShipmentNumber()).isEqualTo(shipmentId2.toString());
   }
-
-
 }

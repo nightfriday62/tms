@@ -1,27 +1,20 @@
 package com.nightfriday.tms.persistence.shipment;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "T_SHIPMENT_ID")
 public class ShipmentId {
   @Id
-  @GeneratedValue
-  private Long id;
-
   private LocalDate date;
-  private String shipmentNumber;
+  private String sequence;
   public ShipmentId() {
   }
 
-  public Long getId() {
-    return id;
-  }
 
   public LocalDate getDate() {
     return date;
@@ -31,15 +24,15 @@ public class ShipmentId {
     this.date = date;
   }
 
-  public String getShipmentNumber() {
-    return shipmentNumber;
+  public String getSequence() {
+    return sequence;
   }
 
-  public void setShipmentNumber(String shipmentNumber) {
-    this.shipmentNumber = shipmentNumber;
+  public void setSequence(String sequence) {
+    this.sequence = sequence;
   }
-
-  public void setId(Long id) {
-    this.id = id;
+  @Override
+  public String toString() {
+    return date.format(DateTimeFormatter.ofPattern("yyMMdd")) + sequence;
   }
 }
