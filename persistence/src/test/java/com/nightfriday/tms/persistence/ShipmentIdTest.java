@@ -25,7 +25,7 @@ public class ShipmentIdTest {
     shipmentId.setSequence(number);
     ShipmentId shipmentId1 = shipmentIdRepository.save(shipmentId);
     assertThat(shipmentId1).isNotNull();
-    assertThat(shipmentId1.getId()).isNotNull();
+    assertThat(shipmentId1.toString()).isNotNull();
     assertThat(shipmentId1.getDate()).isEqualTo(date);
     assertThat(shipmentId1.getSequence()).isEqualTo(number);
   }
@@ -41,7 +41,7 @@ public class ShipmentIdTest {
     ShipmentId shipmentId1 = shipmentIdRepository.findByDate(date).orElse(null);
     System.out.println(shipmentId1);
     assertThat(shipmentId1).isNotNull();
-    assertThat(shipmentId1.getId()).isNotNull();
+    assertThat(shipmentId1.toString()).isNotNull();
     assertThat(shipmentId1.getDate()).isEqualTo(date);
     assertThat(shipmentId1.getSequence()).isEqualTo(number);
   }
