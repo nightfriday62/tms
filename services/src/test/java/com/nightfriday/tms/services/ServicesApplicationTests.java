@@ -19,6 +19,7 @@ import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -178,15 +179,15 @@ class ServicesApplicationTests {
         shippingUnitService.createShippingUnit(testUnit1);
     ShippingUnit unit2 =
         shippingUnitService.createShippingUnit(testUnit2);
-    Shipment shipment = shipmentService.createShipment("City A", "City B", 3.0, 0.3,
-        scheduled.toString(), delivery.toString(), List.of(unit1, unit2));
+    Shipment shipment = shipmentService.createShipment("City A", "City B",
+        scheduled, delivery, new ArrayList<>(), List.of(unit1.getId(), unit2.getId()));
     assertThat(shipment).isNotNull();
     ShipmentId shipmentId = shipmentIdRepository.findByDate(OffsetDateTime.now(ZoneOffset.UTC).toLocalDate()).orElse(null);
     assertThat(shipment.getShipmentNumber()).isEqualTo(shipmentId.toString());
     assertThat(shipment.getOrigin()).isEqualTo("City A");
     assertThat(shipment.getDestination()).isEqualTo("City B");
-    assertThat(shipment.getWeight()).isEqualByComparingTo(BigDecimal.valueOf(3.00));
-    assertThat(shipment.getVolume()).isEqualByComparingTo(BigDecimal.valueOf(0.30));
+    assertThat(shipment.getWeight()).isEqualByComparingTo(BigDecimal.valueOf(3));
+    assertThat(shipment.getVolume()).isEqualByComparingTo(BigDecimal.valueOf(0.009));
     assertThat(shipment.getShippingUnits()).hasSize(2);
     assertThat(shipment.getShippingUnits()).extracting(s -> s.getShippingUnit().getId())
         .containsExactlyInAnyOrder(unit1.getId(), unit2.getId());
@@ -197,8 +198,8 @@ class ServicesApplicationTests {
     OffsetDateTime scheduled =  OffsetDateTime.now();
     OffsetDateTime delivery = OffsetDateTime.now();
 
-    Shipment shipment = shipmentService.createShipment( "City X", "City Y", 5.0, 0.5,
-        scheduled.toString(), delivery.toString(), List.of());
+    Shipment shipment = shipmentService.createShipment( "City X", "City Y",
+        scheduled, delivery, new ArrayList<>(), List.of());
     assertThat(shipment).isNotNull();
     String shipmentNumber = shipment.getShipmentNumber();
     shipmentService.deleteShipment(shipmentNumber);
@@ -216,8 +217,8 @@ class ServicesApplicationTests {
     Truck truck =
         truckService.createTruck("TRUCK123", TruckType.RIGID, "MAN", "TGS", 25.0, 20.0, null, null);
     Shipment shipment =
-        shipmentService.createShipment( "City C", "City D", 4.0, 0.4, scheduled.toString(),
-            delivery.toString(), List.of());
+        shipmentService.createShipment( "City C", "City D", scheduled,
+            delivery, new ArrayList<>(), List.of());
     String shipmentNumber = shipment.getShipmentNumber();
     Shipment updatedShipment = shipmentService.addTruckToShipment(shipmentNumber, "TRUCK123");
     assertThat(updatedShipment).isNotNull();
@@ -235,8 +236,8 @@ class ServicesApplicationTests {
     ShippingUnit testUnit1 = new ShippingUnit("Additional Unit", 1.0, 0.1, 0.1, 0.1, 0.001);
     ShippingUnit unit = shippingUnitService.createShippingUnit(testUnit1);
     Shipment shipment =
-        shipmentService.createShipment( "City E", "City F", 2.0, 0.2, scheduled.toString(),
-            delivery.toString(), List.of());
+        shipmentService.createShipment( "City E", "City F", scheduled,
+            delivery, new ArrayList<>(), List.of());
     inspectShipmentSession(shipment);
     ShipmentId shipmentId = shipmentIdRepository.findByDate(OffsetDateTime.now(ZoneOffset.UTC).toLocalDate()).orElse(null);
     Shipment updatedShipment = shipmentService.addShippingUnitToShipment(shipmentId.toString(), unit);
@@ -247,8 +248,8 @@ class ServicesApplicationTests {
     assertThat(updatedShipment.getShippingUnits().getFirst().getShippingUnit().getId()).isEqualTo(
         unit.getId());
     Shipment shipment2 =
-        shipmentService.createShipment( "City E", "City F", 2.0, 0.2, scheduled.toString(),
-            delivery.toString(), List.of());
+        shipmentService.createShipment( "City E", "City F", scheduled,
+            delivery, new ArrayList<>(), List.of());
     ShipmentId shipmentId2 = shipmentIdRepository.findByDate(OffsetDateTime.now(ZoneOffset.UTC).toLocalDate()).orElse(null);
     System.out.println(shipmentId2.getSequence());
     assertThat(shipment2.getShipmentNumber()).isEqualTo(shipmentId2.toString());

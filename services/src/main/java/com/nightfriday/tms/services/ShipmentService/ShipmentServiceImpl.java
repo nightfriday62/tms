@@ -5,12 +5,13 @@ import com.nightfriday.tms.persistence.shipment.ShipmentId;
 import com.nightfriday.tms.persistence.shipment.ShipmentIdRepository;
 import com.nightfriday.tms.persistence.shipment.ShipmentRepository;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
+import com.nightfriday.tms.persistence.shippingUnit.ShippingUnitRepository;
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
+import com.nightfriday.tms.services.shippingUnitService.ShippingUnitNotFoundException;
 import com.nightfriday.tms.services.truckService.TruckNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -27,6 +28,8 @@ public class ShipmentServiceImpl implements ShipmentService {
   TruckRepository truckRepository;
   @Autowired
   ShipmentIdRepository shipmentIdRepository;
+  @Autowired
+  ShippingUnitRepository shippingUnitRepository;
 
   @Override
   public Shipment getShipmentById(String shipmentNumber) {
@@ -38,20 +41,36 @@ public class ShipmentServiceImpl implements ShipmentService {
   }
 
   @Override
+  @Transactional
   public Shipment createShipment(String origin, String destination,
-                                 double weight,
-                                 double volume, String scheduledShipmentDate,
-                                 String scheduledDeliveryDate, List<ShippingUnit> shippingUnits) {
+                                 OffsetDateTime scheduledShipmentDate,
+                                 OffsetDateTime scheduledDeliveryDate, List<String> trucks,
+                                 List<Long> shippingUnits) {
     Shipment newShipment = new Shipment();
     newShipment.setShipmentNumber(generateOneShipmentId().toString());
     newShipment.setOrigin(origin);
     newShipment.setDestination(destination);
-    newShipment.setWeight(BigDecimal.valueOf(weight));
-    newShipment.setVolume(BigDecimal.valueOf(volume));
-    newShipment.setScheduledShipmentDate(OffsetDateTime.parse(scheduledShipmentDate));
-    newShipment.setScheduledDeliveryDate(OffsetDateTime.parse(scheduledDeliveryDate));
-    for (ShippingUnit unit : shippingUnits) {
-      newShipment.addShippingUnit(unit);
+    newShipment.setScheduledShipmentDate(scheduledShipmentDate);
+    newShipment.setScheduledDeliveryDate(scheduledDeliveryDate);
+    BigDecimal volume = BigDecimal.ZERO;
+    BigDecimal weight = BigDecimal.ZERO;
+    List<ShippingUnit> returnedShippingUnits = shippingUnitRepository.findAllById(shippingUnits);
+    if (returnedShippingUnits.size() != shippingUnits.size()) {
+      throw new ShipmentNotFoundException("Some shipping units not found");
+    }
+    for (ShippingUnit shippingUnit : returnedShippingUnits) {
+      volume = volume.add(shippingUnit.getVolume());
+      weight = weight.add(shippingUnit.getWeight());
+      newShipment.addShippingUnit(shippingUnit);
+    }
+    newShipment.setVolume(volume);
+    newShipment.setWeight(weight);
+    List<Truck> returnedTrucks = truckRepository.findAllById(trucks);
+    if (returnedTrucks.size() != trucks.size()) {
+      throw new ShipmentNotFoundException("Some trucks not found");
+    }
+    for (Truck truck : returnedTrucks) {
+      newShipment.assignTruck(truck);
     }
     return shipmentRepository.save(newShipment);
   }
@@ -88,6 +107,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     shipment.get().assignTruck(truck.get());
     return shipmentRepository.save(shipment.get());
   }
+
   @Transactional
   private ShipmentId generateOneShipmentId() {
     LocalDate now = OffsetDateTime.now(ZoneOffset.UTC).toLocalDate();
@@ -98,10 +118,10 @@ public class ShipmentServiceImpl implements ShipmentService {
       shipmentId.setSequence("0000");
       return shipmentIdRepository.save(shipmentId);
     } else {
-        int sequence = Integer.parseInt(find.getSequence());
-        sequence++;
-        find.setSequence(String.format("%04d", sequence));
-        return shipmentIdRepository.save(find);
+      int sequence = Integer.parseInt(find.getSequence());
+      sequence++;
+      find.setSequence(String.format("%04d", sequence));
+      return shipmentIdRepository.save(find);
     }
   }
 }
