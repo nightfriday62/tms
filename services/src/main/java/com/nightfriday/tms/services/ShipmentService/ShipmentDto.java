@@ -1,9 +1,6 @@
-package com.nightfriday.tms.web.shipment;
+package com.nightfriday.tms.services.ShipmentService;
 
 import com.nightfriday.tms.persistence.shipment.ShipmentStatus;
-import com.nightfriday.tms.web.Truck.TruckDto;
-import com.nightfriday.tms.web.shippingUnit.ShippingUnitDto;
-import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -20,8 +17,8 @@ public class ShipmentDto {
   private OffsetDateTime actualShipmentDate;
   private OffsetDateTime scheduledDeliveryDate;
   private OffsetDateTime actualDeliveryDate;
-  private List<String> trucks;
-  private List<Long> shippingUnits;
+  private List<String> trucks = new ArrayList<>();
+  private List<Long> shippingUnits = new ArrayList<>();
 
   public String getShipmentNumber() {
     return shipmentNumber;

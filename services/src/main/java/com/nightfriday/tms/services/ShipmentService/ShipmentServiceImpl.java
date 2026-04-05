@@ -108,7 +108,6 @@ public class ShipmentServiceImpl implements ShipmentService {
     return shipmentRepository.save(shipment.get());
   }
 
-  @Transactional
   private ShipmentId generateOneShipmentId() {
     LocalDate now = OffsetDateTime.now(ZoneOffset.UTC).toLocalDate();
     ShipmentId find = shipmentIdRepository.findByDate(now).orElse(null);
@@ -123,5 +122,60 @@ public class ShipmentServiceImpl implements ShipmentService {
       find.setSequence(String.format("%04d", sequence));
       return shipmentIdRepository.save(find);
     }
+  }
+  @Override
+  @Transactional
+  public ShipmentDto createShipmentDto(String origin, String destination,
+                                       OffsetDateTime scheduledShipmentDate,
+                                       OffsetDateTime scheduledDeliveryDate, List<String> trucks,
+                                       List<Long> shippingUnits) {
+    Shipment shipment = createShipment(origin, destination, scheduledShipmentDate,
+        scheduledDeliveryDate, trucks, shippingUnits);
+    return ShipmentMapper.mapShipmentToDto(shipment);
+  }
+  @Override
+  @Transactional
+  public ShipmentDto getShipmentDtoById(String shipmentId) {
+    Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentId);
+    if (shipment.isEmpty()) {
+      throw new ShipmentNotFoundException(shipmentId);
+    }
+    return ShipmentMapper.mapShipmentToDto(shipment.get());
+  }
+
+  @Override
+  @Transactional
+  public ShipmentDto addShippingUnitToShipmentDto(String shipmentNumber, List<Long> shippingUnitIds) {
+    Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
+    if (shipment.isEmpty()) {
+      throw new ShipmentNotFoundException(shipmentNumber);
+    }
+    Shipment updatedShipment = shipment.get();
+    List<ShippingUnit> returnedShippingUnits = shippingUnitRepository.findAllById(shippingUnitIds);
+    if (returnedShippingUnits.size() != shippingUnitIds.size()) {
+      throw new ShippingUnitNotFoundException(-1L);
+    }
+    for (ShippingUnit shippingUnit : returnedShippingUnits) {
+      updatedShipment.addShippingUnit(shippingUnit);
+    }
+    return ShipmentMapper.mapShipmentToDto(shipmentRepository.save(updatedShipment));
+  }
+
+  @Override
+  @Transactional
+  public ShipmentDto addTrucksToShipmentDto(String shipmentNumber, List<String> platesNumbers) {
+    Optional<Shipment> shipment = shipmentRepository.findByShipmentNumber(shipmentNumber);
+    if (shipment.isEmpty()) {
+      throw new ShipmentNotFoundException(shipmentNumber);
+    }
+    Shipment updatedShipment = shipment.get();
+    List<Truck> returnedTrucks = truckRepository.findAllById(platesNumbers);
+    if (returnedTrucks.size() != platesNumbers.size()) {
+      throw new TruckNotFoundException("Some trucks not found");
+    }
+    for (Truck truck : returnedTrucks) {
+      updatedShipment.assignTruck(truck);
+    }
+    return ShipmentMapper.mapShipmentToDto(shipmentRepository.save(updatedShipment));
   }
 }

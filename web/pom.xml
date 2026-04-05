@@ -8,8 +8,11 @@
         <artifactId>tms</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-
+    <groupId>com.nightfriday.tms</groupId>
     <artifactId>web</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>web</name>
+    <description>web</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
