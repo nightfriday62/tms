@@ -1,12 +1,10 @@
-package com.nightfriday.tms.web.Truck;
+package com.nightfriday.tms.services.truckService;
 
 import com.nightfriday.tms.persistence.truck.TrailerType;
-import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckType;
-import com.nightfriday.tms.persistence.truckshipment.Truck_Shipment;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
+
 
 public class TruckDto {
   private String plateNumber;
@@ -17,10 +15,10 @@ public class TruckDto {
   private BigDecimal weight;  // in tons
   private TrailerType trailerType;
   private String trailerPlateNumber;
-  private boolean active;
-  private LocalDateTime deletedAt;
-  private List<Truck_Shipment> shipments;
-  public TruckDto() {}
+  private List<String> shipments;
+
+  public TruckDto() {
+  }
 
   public String getPlateNumber() {
     return plateNumber;
@@ -86,28 +84,11 @@ public class TruckDto {
     this.trailerPlateNumber = trailerPlateNumber;
   }
 
-  public LocalDateTime getDeletedAt() {
-    return deletedAt;
-  }
-
-  public void setDeletedAt(LocalDateTime deletedAt) {
-    this.deletedAt = deletedAt;
-  }
-
-  public List<Truck_Shipment> getShipments() {
+  public List<String> getShipments() {
     return shipments;
   }
 
-  public void setShipments(
-      List<Truck_Shipment> shipments) {
+  public void setShipments(List<String> shipments) {
     this.shipments = shipments;
-  }
-
-  public boolean isActive() {
-    return active;
-  }
-
-  public void setActive(boolean active) {
-    this.active = active;
   }
 }

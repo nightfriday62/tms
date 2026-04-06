@@ -2,6 +2,7 @@ package com.nightfriday.tms.web.exception;
 
 import com.nightfriday.tms.services.ShipmentService.ShipmentNotFoundException;
 import com.nightfriday.tms.services.shippingUnitService.ShippingUnitNotFoundException;
+import com.nightfriday.tms.services.truckService.DuplicateTruckException;
 import com.nightfriday.tms.services.truckService.TruckNotFoundException;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,15 @@ public class ApiExceptionHandler {
   public Map<String, String> handleNotFound(RuntimeException ex) {
     return Map.of(
         "error", "NOT_FOUND",
+        "message", ex.getMessage()
+    );
+  }
+
+  @ExceptionHandler({DuplicateTruckException.class})
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public Map<String, String> handleDuplicateTruck(DuplicateTruckException ex) {
+    return Map.of(
+        "error", "DUPLICATE",
         "message", ex.getMessage()
     );
   }

@@ -42,11 +42,11 @@ class TruckControllerTest {
   @MockitoBean
   private TruckService truckService;
 
-  private TruckDto validDto;
+  private com.nightfriday.tms.services.truckService.TruckDto validDto;
 
   @BeforeEach
   void setUp() {
-    validDto = new TruckDto();
+    validDto = new com.nightfriday.tms.services.truckService.TruckDto();
     validDto.setPlateNumber("ABC-123");
     validDto.setTruckType(TruckType.RIGID);
     validDto.setBrand("Volvo");
@@ -55,7 +55,6 @@ class TruckControllerTest {
     validDto.setWeight(new BigDecimal("18.0"));
     validDto.setTrailerType(TrailerType.BOX);
     validDto.setTrailerPlateNumber("TRL-999");
-    validDto.setActive(true);
   }
 
   @Test

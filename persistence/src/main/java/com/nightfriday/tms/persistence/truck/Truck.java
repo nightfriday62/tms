@@ -1,19 +1,16 @@
 package com.nightfriday.tms.persistence.truck;
 
 
+import com.nightfriday.tms.persistence.shipment.Shipment;
 import com.nightfriday.tms.persistence.truckshipment.Truck_Shipment;
-import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.annotations.SQLRestriction;
@@ -37,7 +34,7 @@ public class Truck {
   private TrailerType trailerType;
   private String trailerPlateNumber;
   private boolean active;
-  private LocalDateTime deletedAt;
+  private Instant deletedAt;
   @OneToMany(mappedBy = "truck", orphanRemoval = true, cascade = {CascadeType.MERGE, CascadeType.PERSIST},fetch = FetchType.EAGER)
   private List<Truck_Shipment> shipments = new ArrayList<>();
 
@@ -85,7 +82,7 @@ public class Truck {
     this.active = active;
   }
 
-  public void setDeletedAt(LocalDateTime deletedAt) {
+  public void setDeletedAt(Instant deletedAt) {
     this.deletedAt = deletedAt;
   }
 
@@ -135,5 +132,13 @@ public class Truck {
 
   public void setTrailerPlateNumber(String trailerPlateNumber) {
     this.trailerPlateNumber = trailerPlateNumber;
+  }
+
+  public void addShipment(Shipment shipment) {
+    if (this.shipments == null) {return;}
+    Truck_Shipment truckShipment = new Truck_Shipment();
+    truckShipment.setShipment(shipment);
+    truckShipment.setTruck(this);
+    this.shipments.add(truckShipment);
   }
 }

@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@SpringBootTest
+@SpringBootTest(classes = ServicesTestConfig.class)
 class ServicesApplicationTests {
   @Autowired
   private TruckService truckService;
@@ -72,7 +72,7 @@ class ServicesApplicationTests {
   void testCreateTruck() {
     Truck savedTruck =
         truckService.createTruck("ABC123", TruckType.RIGID, "Volvo", "FH16", 20.5, 18.0, null,
-            null);
+            null, null);
     Optional<Truck> fetchedTruck = truckRepository.findByPlateNumber("ABC123");
     assertThat(fetchedTruck).isNotNull();
     assertThat(fetchedTruck.get().getPlateNumber()).isEqualTo("ABC123");
@@ -82,7 +82,7 @@ class ServicesApplicationTests {
   @Test
   void testDeleteTruck() {
     truckService.createTruck("DEL123", TruckType.RIGID, "Scania", "R500", 25.0, 20.0, null,
-        null);
+        null, null );
     Optional<Truck> fetchedTruck = truckRepository.findByPlateNumber("DEL123");
     assertThat(fetchedTruck).isNotNull();
     truckService.deleteTruck("DEL123");
@@ -215,7 +215,7 @@ class ServicesApplicationTests {
     OffsetDateTime delivery = OffsetDateTime.now();
 
     Truck truck =
-        truckService.createTruck("TRUCK123", TruckType.RIGID, "MAN", "TGS", 25.0, 20.0, null, null);
+        truckService.createTruck("TRUCK123", TruckType.RIGID, "MAN", "TGS", 25.0, 20.0, null, null, null );
     Shipment shipment =
         shipmentService.createShipment( "City C", "City D", scheduled,
             delivery, new ArrayList<>(), List.of());

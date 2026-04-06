@@ -22,16 +22,17 @@ public class TruckController {
 
   @PostMapping("/trucks")
   @ResponseStatus(HttpStatus.CREATED)
-  public TruckDto createTruck(@Valid @RequestBody TruckDto truckDto) {
-    Truck truck = TruckMapper.toEntity(truckDto);
+  public com.nightfriday.tms.services.truckService.TruckDto createTruck(@Valid @RequestBody
+                                                                        com.nightfriday.tms.services.truckService.TruckDto truckDto) {
+    Truck truck = com.nightfriday.tms.services.truckService.TruckMapper.toEntity(truckDto);
     Truck created = truckService.createTruck(truck);
-    return TruckMapper.toDto(created);
+    return com.nightfriday.tms.services.truckService.TruckMapper.toDto(created);
   }
 
   @GetMapping("/trucks/{plateNumber}")
-  public TruckDto getTruckByPlateNumber(@PathVariable String plateNumber) {
+  public com.nightfriday.tms.services.truckService.TruckDto getTruckByPlateNumber(@PathVariable String plateNumber) {
     Truck truck = truckService.getTruckByPlateNumber(plateNumber);
-    return TruckMapper.toDto(truck);
+    return com.nightfriday.tms.services.truckService.TruckMapper.toDto(truck);
   }
 
   @DeleteMapping("/trucks/{plateNumber}")

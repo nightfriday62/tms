@@ -1,33 +1,43 @@
 package com.nightfriday.tms.services.truckService;
 
+import com.nightfriday.tms.persistence.shipment.Shipment;
+import com.nightfriday.tms.persistence.shipment.ShipmentRepository;
 import com.nightfriday.tms.persistence.truck.TrailerType;
 import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
 import com.nightfriday.tms.persistence.truck.TruckType;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TruckServiceImpl implements TruckService {
 
   private final TruckRepository truckRepository;
+  private final ShipmentRepository shipmentRepository;
 
   @Autowired
-  public TruckServiceImpl(TruckRepository truckRepository) {
+  public TruckServiceImpl(TruckRepository truckRepository, ShipmentRepository shipmentRepository) {
     this.truckRepository = truckRepository;
+    this.shipmentRepository = shipmentRepository;
   }
 
 
   @Override
+  @Transactional
   public Truck createTruck(String plateNumber, TruckType truckType, String brand, String model,
                            double volume, double weight, TrailerType trailerType,
-                           String trailerPlateNumber) {
+                           String trailerPlateNumber, List<String> shipmentNumbers) {
     if (plateNumber == null || plateNumber.isEmpty() || truckType == null ||
         volume <= 0 || weight <= 0) {
       throw new IllegalArgumentException("Invalid input parameters");
     }
+    truckRepository.findByPlateNumber(plateNumber).ifPresent(t -> {
+      throw new DuplicateTruckException(plateNumber);
+    });
     Truck deletedCheck = truckRepository.findDeleted(plateNumber);
     if (deletedCheck != null) {
       deletedCheck.setActive(true);
@@ -45,8 +55,23 @@ public class TruckServiceImpl implements TruckService {
         BigDecimal.valueOf(volume),
         BigDecimal.valueOf(weight),
         trailerType, trailerPlateNumber);
+    newTruck.setActive(true);
+    /*for (String shipmentNumber : shipmentNumbers) {
+      shipmentRepository.findByShipmentNumber(shipmentNumber).ifPresent(newTruck::addShipment);
+    }
+    Just leave this here for learning. newTuck::addShipment is a bound method reference*/
+    if (shipmentNumbers != null) {
+      List<Shipment> shipments = shipmentRepository.findAllByShipmentNumberIn(shipmentNumbers);
+      if (shipments.size() != shipmentNumbers.size()) {
+        throw new TruckNotFoundException("One or more shipment numbers not found");
+      }
+      for (Shipment shipment : shipments) {
+        newTruck.addShipment(shipment);
+      }
+    }
     return truckRepository.save(newTruck);
   }
+
   @Override
   public Truck createTruck(Truck truck) {
 
@@ -65,6 +90,7 @@ public class TruckServiceImpl implements TruckService {
     }
     return truckRepository.save(truck);
   }
+
   // Soft delete by setting active to false
   // and setting deletedAt to current timestamp
   // Actual deletion is handled by @SQLDelete annotation in Truck entity
@@ -85,5 +111,20 @@ public class TruckServiceImpl implements TruckService {
       throw new TruckNotFoundException(plateNumber);
     }
     return truck.get();
+  }
+
+  @Override
+  @Transactional
+  public TruckDto createTruckDto(String plateNumber, TruckType truckType, String brand,
+                                 String model, double volume, double weight,
+                                 TrailerType trailerType, String trailerPlateNumber, List<String> shipmentNumbers) {
+    Truck truck = createTruck(plateNumber, truckType, brand, model, volume, weight, trailerType, trailerPlateNumber, shipmentNumbers);
+    return TruckMapper.toDto(truck);
+  }
+
+  @Override
+  public TruckDto getTruckByPlateNumberDto(String plateNumber) {
+    Truck truck = getTruckByPlateNumber(plateNumber);
+    return TruckMapper.toDto(truck);
   }
 }
