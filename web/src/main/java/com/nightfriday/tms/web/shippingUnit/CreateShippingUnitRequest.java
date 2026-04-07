@@ -1,13 +1,12 @@
 package com.nightfriday.tms.web.shippingUnit;
 
-import jakarta.validation.constraints.NotBlank;
-import java.math.BigDecimal;
-import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 
 
-
-public class ShippingUnitDto {
+public class CreateShippingUnitRequest {
   private Long id;
   @NotBlank
   @Size(max = 255, message = "Description must be at most 255 characters")
@@ -22,7 +21,7 @@ public class ShippingUnitDto {
   private BigDecimal length; // in meters
   private BigDecimal volume; // in cubic meters
 
-  public ShippingUnitDto() {}
+  public CreateShippingUnitRequest() {}
 
   public Long getId() {
     return id;

@@ -1,6 +1,6 @@
 package com.nightfriday.tms.web.Truck;
 
-import com.nightfriday.tms.persistence.truck.Truck;
+
 import com.nightfriday.tms.services.truckService.TruckService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import com.nightfriday.tms.services.truckService.TruckDto;
 
 @RestController
 @RequestMapping("/api")
@@ -22,17 +23,17 @@ public class TruckController {
 
   @PostMapping("/trucks")
   @ResponseStatus(HttpStatus.CREATED)
-  public com.nightfriday.tms.services.truckService.TruckDto createTruck(@Valid @RequestBody
-                                                                        com.nightfriday.tms.services.truckService.TruckDto truckDto) {
-    Truck truck = com.nightfriday.tms.services.truckService.TruckMapper.toEntity(truckDto);
-    Truck created = truckService.createTruck(truck);
-    return com.nightfriday.tms.services.truckService.TruckMapper.toDto(created);
+  public TruckDto createTruck(@Valid @RequestBody CreateTruckRequest truckRequest) {
+    return truckService.createTruckDto(truckRequest.getPlateNumber(), truckRequest.getTruckType(),
+        truckRequest.getBrand(),
+        truckRequest.getModel(), truckRequest.getVolume(), truckRequest.getWeight(),
+        truckRequest.getTrailerType(), truckRequest.getTrailerPlateNumber(),
+        truckRequest.getShipments());
   }
 
   @GetMapping("/trucks/{plateNumber}")
-  public com.nightfriday.tms.services.truckService.TruckDto getTruckByPlateNumber(@PathVariable String plateNumber) {
-    Truck truck = truckService.getTruckByPlateNumber(plateNumber);
-    return com.nightfriday.tms.services.truckService.TruckMapper.toDto(truck);
+  public TruckDto getTruckByPlateNumber(@PathVariable String plateNumber) {
+    return truckService.getTruckByPlateNumberDto(plateNumber);
   }
 
   @DeleteMapping("/trucks/{plateNumber}")

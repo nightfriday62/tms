@@ -39,11 +39,11 @@ class ShippingUnitControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  private ShippingUnitDto validDto;
+  private com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto validDto;
 
   @BeforeEach
   void setUp() {
-    validDto = new ShippingUnitDto();
+    validDto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
     validDto.setDescription("Standard shipping container");
     validDto.setWeight(new BigDecimal("5.5"));
     validDto.setHeight(new BigDecimal("2.5"));
@@ -87,7 +87,8 @@ class ShippingUnitControllerTest {
   @Test
   void testCreateShippingUnit_MissingDescription() throws Exception {
     // Arrange
-    ShippingUnitDto invalidDto = new ShippingUnitDto();
+    com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto
+        invalidDto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
     invalidDto.setDescription(null); // Missing required field
     invalidDto.setWeight(new BigDecimal("5.5"));
     invalidDto.setHeight(new BigDecimal("2.5"));
@@ -107,7 +108,8 @@ class ShippingUnitControllerTest {
   @Test
   void testCreateShippingUnit_DescriptionTooLong() throws Exception {
     // Arrange
-    ShippingUnitDto invalidDto = new ShippingUnitDto();
+    com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto
+        invalidDto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
     invalidDto.setDescription("x".repeat(256)); // Exceeds max 255 characters
     invalidDto.setWeight(new BigDecimal("5.5"));
     invalidDto.setHeight(new BigDecimal("2.5"));
@@ -127,7 +129,8 @@ class ShippingUnitControllerTest {
   @Test
   void testCreateShippingUnit_InvalidWeight() throws Exception {
     // Arrange
-    ShippingUnitDto invalidDto = new ShippingUnitDto();
+    com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto
+        invalidDto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
     invalidDto.setDescription("Standard shipping container");
     invalidDto.setWeight(new BigDecimal("0")); // Must be > 0
     invalidDto.setHeight(new BigDecimal("2.5"));
@@ -147,7 +150,8 @@ class ShippingUnitControllerTest {
   @Test
   void testCreateShippingUnit_InvalidHeight() throws Exception {
     // Arrange
-    ShippingUnitDto invalidDto = new ShippingUnitDto();
+    com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto
+        invalidDto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
     invalidDto.setDescription("Standard shipping container");
     invalidDto.setWeight(new BigDecimal("5.5"));
     invalidDto.setHeight(new BigDecimal("-1")); // Must be > 0
@@ -167,7 +171,8 @@ class ShippingUnitControllerTest {
   @Test
   void testCreateShippingUnit_InvalidWidth() throws Exception {
     // Arrange
-    ShippingUnitDto invalidDto = new ShippingUnitDto();
+    com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto
+        invalidDto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
     invalidDto.setDescription("Standard shipping container");
     invalidDto.setWeight(new BigDecimal("5.5"));
     invalidDto.setHeight(new BigDecimal("2.5"));
@@ -187,7 +192,8 @@ class ShippingUnitControllerTest {
   @Test
   void testCreateShippingUnit_InvalidLength() throws Exception {
     // Arrange
-    ShippingUnitDto invalidDto = new ShippingUnitDto();
+    com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto
+        invalidDto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
     invalidDto.setDescription("Standard shipping container");
     invalidDto.setWeight(new BigDecimal("5.5"));
     invalidDto.setHeight(new BigDecimal("2.5"));

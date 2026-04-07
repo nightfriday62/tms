@@ -29,12 +29,9 @@ public class TruckServiceImpl implements TruckService {
   @Override
   @Transactional
   public Truck createTruck(String plateNumber, TruckType truckType, String brand, String model,
-                           double volume, double weight, TrailerType trailerType,
+                           BigDecimal volume, BigDecimal weight, TrailerType trailerType,
                            String trailerPlateNumber, List<String> shipmentNumbers) {
-    if (plateNumber == null || plateNumber.isEmpty() || truckType == null ||
-        volume <= 0 || weight <= 0) {
-      throw new IllegalArgumentException("Invalid input parameters");
-    }
+
     truckRepository.findByPlateNumber(plateNumber).ifPresent(t -> {
       throw new DuplicateTruckException(plateNumber);
     });
@@ -45,15 +42,15 @@ public class TruckServiceImpl implements TruckService {
       deletedCheck.setBrand(brand);
       deletedCheck.setModel(model);
       deletedCheck.setTruckType(truckType);
-      deletedCheck.setVolume(BigDecimal.valueOf(volume));
-      deletedCheck.setWeight(BigDecimal.valueOf(weight));
+      deletedCheck.setVolume(volume);
+      deletedCheck.setWeight(weight);
       deletedCheck.setTrailerType(trailerType);
       deletedCheck.setTrailerPlateNumber(trailerPlateNumber);
       return truckRepository.save(deletedCheck);
     }
     Truck newTruck = new Truck(plateNumber, truckType, brand, model,
-        BigDecimal.valueOf(volume),
-        BigDecimal.valueOf(weight),
+        volume,
+        weight,
         trailerType, trailerPlateNumber);
     newTruck.setActive(true);
     /*for (String shipmentNumber : shipmentNumbers) {
@@ -116,7 +113,7 @@ public class TruckServiceImpl implements TruckService {
   @Override
   @Transactional
   public TruckDto createTruckDto(String plateNumber, TruckType truckType, String brand,
-                                 String model, double volume, double weight,
+                                 String model, BigDecimal volume, BigDecimal weight,
                                  TrailerType trailerType, String trailerPlateNumber, List<String> shipmentNumbers) {
     Truck truck = createTruck(plateNumber, truckType, brand, model, volume, weight, trailerType, trailerPlateNumber, shipmentNumbers);
     return TruckMapper.toDto(truck);

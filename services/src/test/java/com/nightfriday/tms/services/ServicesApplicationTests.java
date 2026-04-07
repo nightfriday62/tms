@@ -71,7 +71,7 @@ class ServicesApplicationTests {
   @Test
   void testCreateTruck() {
     Truck savedTruck =
-        truckService.createTruck("ABC123", TruckType.RIGID, "Volvo", "FH16", 20.5, 18.0, null,
+        truckService.createTruck("ABC123", TruckType.RIGID, "Volvo", "FH16", BigDecimal.valueOf(20.5), BigDecimal.valueOf(18.0), null,
             null, null);
     Optional<Truck> fetchedTruck = truckRepository.findByPlateNumber("ABC123");
     assertThat(fetchedTruck).isNotNull();
@@ -81,7 +81,7 @@ class ServicesApplicationTests {
 
   @Test
   void testDeleteTruck() {
-    truckService.createTruck("DEL123", TruckType.RIGID, "Scania", "R500", 25.0, 20.0, null,
+    truckService.createTruck("DEL123", TruckType.RIGID, "Scania", "R500", BigDecimal.valueOf(25.0), BigDecimal.valueOf(20.0), null,
         null, null );
     Optional<Truck> fetchedTruck = truckRepository.findByPlateNumber("DEL123");
     assertThat(fetchedTruck).isNotNull();
@@ -215,7 +215,7 @@ class ServicesApplicationTests {
     OffsetDateTime delivery = OffsetDateTime.now();
 
     Truck truck =
-        truckService.createTruck("TRUCK123", TruckType.RIGID, "MAN", "TGS", 25.0, 20.0, null, null, null );
+        truckService.createTruck("TRUCK123", TruckType.RIGID, "MAN", "TGS", BigDecimal.valueOf(25.0), BigDecimal.valueOf(20.0), null, null, null );
     Shipment shipment =
         shipmentService.createShipment( "City C", "City D", scheduled,
             delivery, new ArrayList<>(), List.of());

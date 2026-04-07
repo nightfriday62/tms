@@ -1,12 +1,13 @@
-package com.nightfriday.tms.web.shippingUnit;
+package com.nightfriday.tms.services.shippingUnitService;
 import com.nightfriday.tms.persistence.shippingUnit.ShippingUnit;
 
 public class ShippingUnitMapper {
-    public static ShippingUnitDto toDTO(ShippingUnit shippingUnit) {
+    public static com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto toDTO(ShippingUnit shippingUnit) {
         if (shippingUnit == null) {
         return null;
         }
-      ShippingUnitDto dto = new ShippingUnitDto();
+      com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto
+          dto = new com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto();
         dto.setId(shippingUnit.getId());
         dto.setDescription(shippingUnit.getDescription());
         dto.setWeight(shippingUnit.getWeight());
@@ -17,7 +18,8 @@ public class ShippingUnitMapper {
         return dto;
     }
 
-    public static ShippingUnit toEntity(ShippingUnitDto dto) {
+    public static ShippingUnit toEntity(
+        com.nightfriday.tms.services.shippingUnitService.ShippingUnitDto dto) {
         if (dto == null) {
         return null;
         }
