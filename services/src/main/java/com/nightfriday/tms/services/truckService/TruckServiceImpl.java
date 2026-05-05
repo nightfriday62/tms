@@ -7,6 +7,7 @@ import com.nightfriday.tms.persistence.truck.Truck;
 import com.nightfriday.tms.persistence.truck.TruckRepository;
 import com.nightfriday.tms.persistence.truck.TruckType;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,5 +124,16 @@ public class TruckServiceImpl implements TruckService {
   public TruckDto getTruckByPlateNumberDto(String plateNumber) {
     Truck truck = getTruckByPlateNumber(plateNumber);
     return TruckMapper.toDto(truck);
+  }
+
+
+  @Override
+  public List<TruckDto> getTruckDtos() {
+    List<Truck> trucks = truckRepository.findAll();
+    List<TruckDto> truckDtos = new ArrayList<>();
+    for (Truck truck : trucks) {
+      truckDtos.add(TruckMapper.toDto(truck));
+    }
+    return truckDtos;
   }
 }

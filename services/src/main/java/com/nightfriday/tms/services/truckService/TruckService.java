@@ -16,4 +16,5 @@ public interface TruckService {
   TruckDto createTruckDto(String plateNumber, TruckType truckType, @Nullable String brand,
                           @Nullable String model, BigDecimal volume, BigDecimal weight, @Nullable TrailerType trailerType, @Nullable String trailerPlateNumber, List<String> shipmentNumbers);
   TruckDto getTruckByPlateNumberDto(String plateNumber);
+  List<TruckDto> getTruckDtos();
 }

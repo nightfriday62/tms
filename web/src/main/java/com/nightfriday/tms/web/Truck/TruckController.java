@@ -3,6 +3,7 @@ package com.nightfriday.tms.web.Truck;
 
 import com.nightfriday.tms.services.truckService.TruckService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +35,11 @@ public class TruckController {
   @GetMapping("/trucks/{plateNumber}")
   public TruckDto getTruckByPlateNumber(@PathVariable String plateNumber) {
     return truckService.getTruckByPlateNumberDto(plateNumber);
+  }
+
+  @GetMapping("/trucks")
+  public List<TruckDto> getTruckDtos() {
+    return truckService.getTruckDtos();
   }
 
   @DeleteMapping("/trucks/{plateNumber}")

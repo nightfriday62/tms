@@ -66,8 +66,6 @@ public class ShipmentServiceImpl implements ShipmentService {
     newShipment.setVolume(volume);
     newShipment.setWeight(weight);
     List<Truck> returnedTrucks = truckRepository.findAllById(trucks);
-    System.out.println(trucks.size());
-    System.out.println(returnedTrucks.size());
     if (returnedTrucks.size() != trucks.size()) {
       throw new ShipmentNotFoundException("Some trucks not found");
     }
